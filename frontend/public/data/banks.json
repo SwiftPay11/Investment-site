@@ -1,0 +1,120 @@
+{
+  "Nigeria": [
+    "Access Bank",
+    "Zenith Bank",
+    "GTBank",
+    "UBA",
+    "First Bank",
+    "Sterling Bank",
+    "Opay",
+    "PalmPay"
+  ],
+  "United States": [
+    "Bank of America",
+    "Chase Bank",
+    "Wells Fargo",
+    "Citibank",
+    "Capital One",
+    "US Bank",
+    "PNC Bank"
+  ],
+  "United Kingdom": [
+    "HSBC",
+    "Barclays",
+    "Lloyds Bank",
+    "NatWest",
+    "Monzo",
+    "Revolut",
+    "Starling Bank"
+  ],
+  "Canada": [
+    "Royal Bank of Canada (RBC)",
+    "TD Canada Trust",
+    "Scotiabank",
+    "BMO Bank of Montreal",
+    "CIBC",
+    "National Bank of Canada",
+    "Tangerine Bank"
+  ],
+  "Australia": [
+    "Commonwealth Bank",
+    "Westpac",
+    "ANZ",
+    "NAB (National Australia Bank)",
+    "Bendigo Bank",
+    "Suncorp Bank",
+    "Bankwest"
+  ],
+  "France": [
+    "BNP Paribas",
+    "Société Générale",
+    "Crédit Agricole",
+    "La Banque Postale",
+    "Crédit Mutuel",
+    "HSBC France",
+    "Caisse d’Epargne"
+  ],
+  "Colombia": [
+    "Bancolombia",
+    "Banco de Bogotá",
+    "Davivienda",
+    "BBVA Colombia",
+    "Banco Popular",
+    "Banco AV Villas",
+    "Scotiabank Colpatria"
+  ],
+  "Ecuador": [
+    "Banco Pichincha",
+    "Banco de Guayaquil",
+    "Produbanco",
+    "Banco Bolivariano",
+    "Banco del Pacífico",
+    "Cooperativa JEP",
+    "Banco Internacional"
+  ],
+  "Iceland": [
+    "Landsbankinn",
+    "Arion Banki",
+    "Íslandsbanki",
+    "Kviku Banki",
+    "Byggðastofnun",
+    "Sparisjóður Höfðhverfinga",
+    "SPRON"
+  ],
+  "Germany": [
+    "Deutsche Bank",
+    "Commerzbank",
+    "N26",
+    "ING-DiBa",
+    "Sparkasse",
+    "Postbank",
+    "DKB"
+  ],
+  "India": [
+    "State Bank of India (SBI)",
+    "HDFC Bank",
+    "ICICI Bank",
+    "Axis Bank",
+    "Kotak Mahindra Bank",
+    "Punjab National Bank",
+    "Yes Bank"
+  ],
+  "South Africa": [
+    "Standard Bank",
+    "Absa Bank",
+    "First National Bank (FNB)",
+    "Nedbank",
+    "Capitec Bank",
+    "TymeBank",
+    "Bidvest Bank"
+  ],
+  "Brazil": [
+    "Banco do Brasil",
+    "Itaú Unibanco",
+    "Bradesco",
+    "Caixa Econômica Federal",
+    "Santander Brasil",
+    "Banco Inter",
+    "Nubank"
+  ]
+}
