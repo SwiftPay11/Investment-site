@@ -14,16 +14,19 @@ import * as nodemailer from 'nodemailer';
 import { User } from '../users/users.entity';
 
 // GLOBAL transporter (recommended)
-// GLOBAL transporter (Resend SMTP)
 const transporter = nodemailer.createTransport({
-  host: "smtp.resend.com",
-  port: 587,
-  secure: false,
+  host: "api.resend.com",
+  port: 443,
+  secure: true,
   auth: {
     user: "resend",
-    pass: process.env.RESEND_API_KEY, // ← store API key in env
+    pass: process.env.RESEND_API_KEY,
   },
-  })
+  tls: {
+    rejectUnauthorized: false,
+  },
+});
+
 @Injectable()
 export class AuthService {
   constructor(
