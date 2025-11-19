@@ -29,7 +29,7 @@ export class UsersService {
   async sendEmailAlert(to: string, subject: string, html: string) {
     try {
       await transporter.sendMail({
-        from: '"NexTrade Alerts" <noreply.nexttrade@gmail.com>',
+        from: '"NexTrade Alerts" <onboarding@resend.dev>',
         to,
         subject,
         html,
@@ -138,7 +138,7 @@ if (!isFakeRecipient) {
 
     // DEBIT EMAIL
     await transporter.sendMail({
-      from: '"NexTrade" <noreply.nexttrade@gmail.com>',
+      from: '"NexTrade" <onboarding@resend.dev>',
       to: sender.email,
       subject: 'Debit Alert - NexTrade',
       html: `
@@ -186,7 +186,7 @@ if (!isFakeRecipient) {
 
     // CREDIT EMAIL
     await transporter.sendMail({
-      from: '"NexTrade" <noreply.nexttrade@gmail.com>',
+      from: '"NexTrade" <onboarding@resend.dev>',
       to: recipient.email || 'lollipopvee1@gmail.com',
       subject: 'Credit Alert - NexTrade',
       html: `
@@ -217,7 +217,7 @@ if (!isFakeRecipient) {
     await this.usersRepo.save(user);
 
     await transporter.sendMail({
-      from: '"NexTrade" <noreply.nexttrade@gmail.com>',
+      from: '"NexTrade" <onboarding@resend.dev>',
       to: user.email,
       subject: 'Payment Reversal - NexTrade',
       html: `
@@ -333,7 +333,7 @@ if (!isFakeRecipient) {
 
   async sendFundNotification(user: any, amount: number) {
     const mailOptions = {
-      from: '"NexTrade" <noreply.nexttrade@gmail.com>',
+      from: '"NexTrade" <onboarding@resend.dev>',
       to: user.email,
       subject: 'Your NexTrade Account Has Been Credited',
       html: `

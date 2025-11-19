@@ -70,7 +70,7 @@ export class AuthService {
 
   // Send email
   await transporter.sendMail({
-    from: '"NexTrade Login" <noreply.nexttrade@gmail.com>',
+    from: '"NexTrade Login" <onboarding@resend.dev>',
     to: user.email,
     subject: "Your NexTrade Login Verification Code",
     html: `
@@ -202,7 +202,7 @@ async confirmPasswordReset(email: string, code: string, newPassword: string) {
 // EMAIL SENDER (reuse your pattern)
 private async sendEmail(to: string, subject: string, html: string) {
   await transporter.sendMail({
-    from: '"NexTrade" <noreply.nexttrade@gmail.com>',
+    from: '"NexTrade" <onboarding@resend.dev>',
     to,
     subject,
     html,
