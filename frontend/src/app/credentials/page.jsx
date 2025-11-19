@@ -40,7 +40,7 @@ export default function CredentialsPage() {
           Complete Your Profile
         </h1>
         <p className="text-gray-400 max-w-md">
-          We need a few more details to complete your CryptoFX account setup.
+          We need a few more details to complete your NexTrade account setup.
           Your data is encrypted and used only for verification.
         </p>
 

@@ -56,7 +56,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gradient-to-b from-[#020817] via-[#060b1e] to-[#0a0f29] text-white flex flex-col">
       {/* Header */}
       <header className="flex justify-between items-center px-10 py-5 bg-transparent">
-        <h1 className="text-3xl font-bold text-blue-400">CryptoFX</h1>
+        <h1 className="text-3xl font-bold text-blue-400">NexTrade</h1>
         <div className="flex items-center gap-4">
           <select className="bg-transparent border border-gray-500 rounded-md p-2 text-sm">
             <option>English</option>
@@ -133,7 +133,7 @@ export default function LoginPage() {
 
       {/* Footer */}
       <footer className="text-center text-xs text-gray-500 py-4 border-t border-blue-900/40">
-        © {new Date().getFullYear()} CryptoFX Markets. All rights reserved.
+        © {new Date().getFullYear()} NexTrade Markets. All rights reserved.
       </footer>
     </div>
   );
