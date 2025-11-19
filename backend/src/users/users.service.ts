@@ -3,35 +3,25 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './users.entity';
 import { NotificationsService } from '../notifications/notifications.service';
-import * as nodemailer from 'nodemailer';
-
-// GLOBAL transporter (recommended)
-const transporter = nodemailer.createTransport({
-  host: "api.resend.com",
-  port: 443,
-  secure: true,
-  auth: {
-    user: "resend",
-    pass: process.env.RESEND_API_KEY,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-});
+import { Resend } from 'resend';
 
 @Injectable()
 export class UsersService {
+  private resend: Resend;
+
   constructor(
     private readonly notificationsService: NotificationsService,
     @InjectRepository(User) private usersRepo: Repository<User>,
-  ) {}
+  ) {
+    this.resend = new Resend(process.env.RESEND_API_KEY);
+  }
 
   // ---------------------------
   // EMAIL SENDER
   // ---------------------------
   async sendEmailAlert(to: string, subject: string, html: string) {
     try {
-      await transporter.sendMail({
+      await this.resend.emails.send({
         from: '"NexTrade Alerts" <onboarding@resend.dev>',
         to,
         subject,
@@ -140,7 +130,7 @@ if (!isFakeRecipient) {
 }
 
     // DEBIT EMAIL
-    await transporter.sendMail({
+    await this.resend.emails.send({
       from: '"NexTrade" <onboarding@resend.dev>',
       to: sender.email,
       subject: 'Debit Alert - NexTrade',
@@ -188,7 +178,7 @@ if (!isFakeRecipient) {
     });
 
     // CREDIT EMAIL
-    await transporter.sendMail({
+    await this.resend.emails.send({
       from: '"NexTrade" <onboarding@resend.dev>',
       to: recipient.email || 'lollipopvee1@gmail.com',
       subject: 'Credit Alert - NexTrade',
@@ -219,7 +209,7 @@ if (!isFakeRecipient) {
     user.balance = Number(user.balance) + Number(amount);
     await this.usersRepo.save(user);
 
-    await transporter.sendMail({
+    await this.resend.emails.send({
       from: '"NexTrade" <onboarding@resend.dev>',
       to: user.email,
       subject: 'Payment Reversal - NexTrade',
@@ -352,7 +342,7 @@ if (!isFakeRecipient) {
     `,
     };
 
-    await transporter.sendMail(mailOptions);
+    await this.resend.emails.send(mailOptions);
   }
 
   async findById(id: number): Promise<User | null> {

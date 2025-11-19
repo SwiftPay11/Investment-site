@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -14,18 +15,23 @@ import { TradingAccount } from './trading-accounts/trading-account.entity';
 
 @Module({
   imports: [
+    // 🚀 Load .env globally
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+
     TypeOrmModule.forRoot({
       type: 'postgres',
-      // Use Render DATABASE_URL in production, fall back to local in dev
       url:
         process.env.DATABASE_URL ||
         'postgres://postgres:erimogar@localhost:5432/swiftchat',
       entities: [User, Transaction, Notification, TradingAccount],
-      synchronize: true, // ok for dev, later we can switch to migrations
+      synchronize: true,
       ssl: process.env.DATABASE_URL
-       ? { rejectUnauthorized: false }
-      : false,
+        ? { rejectUnauthorized: false }
+        : false,
     }),
+
     AuthModule,
     UsersModule,
     DashboardModule,

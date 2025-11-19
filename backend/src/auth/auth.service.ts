@@ -4,40 +4,31 @@ import {
   UnauthorizedException,
   NotFoundException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm'
+import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import * as nodemailer from 'nodemailer';
 import { User } from '../users/users.entity';
-
-// GLOBAL transporter (recommended)
-const transporter = nodemailer.createTransport({
-  host: "api.resend.com",
-  port: 443,
-  secure: true,
-  auth: {
-    user: "resend",
-    pass: process.env.RESEND_API_KEY,
-  },
-  tls: {
-    rejectUnauthorized: false,
-  },
-});
+import { Resend } from 'resend';
 
 @Injectable()
 export class AuthService {
+  private resend: Resend; // ← Add this line
+
   constructor(
     private readonly notificationsService: NotificationsService,
 
     @InjectRepository(User)
-    private readonly usersRepo: Repository<User>,   // ✔ FIXED
+    private readonly usersRepo: Repository<User>, // ✔ FIXED
 
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
-  ) {}
+  ) {
+    // ← Initialize Resend here
+    this.resend = new Resend(process.env.RESEND_API_KEY);
+  }
 
   // REGISTER
   async register(country: string, email: string, password: string) {
@@ -72,7 +63,7 @@ export class AuthService {
   await this.usersService.updateUser(user);
 
   // Send email
-  await transporter.sendMail({
+  await this.resend.emails.send({
     from: '"NexTrade Login" <onboarding@resend.dev>',
     to: user.email,
     subject: "Your NexTrade Login Verification Code",
@@ -204,7 +195,7 @@ async confirmPasswordReset(email: string, code: string, newPassword: string) {
 
 // EMAIL SENDER (reuse your pattern)
 private async sendEmail(to: string, subject: string, html: string) {
-  await transporter.sendMail({
+  await this.resend.emails.send({
     from: '"NexTrade" <onboarding@resend.dev>',
     to,
     subject,
