@@ -6,13 +6,16 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
-      'https://nextradex.netlify.app',
-      'http://localhost:3000'
+      "https://nextradex.netlify.app",
+      "http://localhost:3000"
     ],
     credentials: true,
   });
 
-  await app.listen(5000);
+  const port = process.env.PORT || 5000;
+
+  await app.listen(port, "0.0.0.0");
+  console.log(`Server running on port ${port}`);
 }
 
 bootstrap();
