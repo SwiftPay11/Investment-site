@@ -39,7 +39,7 @@ export default function CreateAccountPage() {
 
     try {
       const res = await fetch(
-        `http://192.168.1.87:5000/trading-accounts/create/${user.id}`,
+        `https://investment-site-x6tr.onrender.com/trading-accounts/create/${user.id}`,
         {
           method: "POST",
         }

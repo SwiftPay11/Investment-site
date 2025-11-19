@@ -19,7 +19,7 @@ export default function NotificationsPage() {
   const load = async () => {
     if (!user?.id) return;
 
-    const res = await fetch(`http://192.168.1.87:5000/notifications/${user.id}`);
+    const res = await fetch(`https://investment-site-x6tr.onrender.com/notifications/${user.id}`);
     const data = await res.json();
     setNotifications(Array.isArray(data) ? data : []);
   };
@@ -50,7 +50,7 @@ export default function NotificationsPage() {
 
   // Mark as read
   const markAsRead = async (id) => {
-    await fetch(`http://localhost:5000/notifications/mark-read/${id}`, {
+    await fetch(`https://investment-site-x6tr.onrender.com/notifications/mark-read/${id}`, {
       method: "PATCH",
     });
 

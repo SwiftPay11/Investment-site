@@ -6,7 +6,7 @@ export default function TransactionsPage() {
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     if (!user?.id) return;
-    fetch(`http://192.168.1.87:5000/wallet/transactions/${user.id}`)
+    fetch(`https://investment-site-x6tr.onrender.com/wallet/transactions/${user.id}`)
       .then(r => r.json())
       .then(j => setTx(j.data || j))
       .catch(console.error);

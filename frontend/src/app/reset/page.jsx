@@ -29,7 +29,7 @@ export default function ResetPasswordPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://192.168.1.87:5000/auth/reset-password", {
+      const res = await fetch("https://investment-site-x6tr.onrender.com/auth/reset-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: form.email }),
@@ -55,7 +55,7 @@ export default function ResetPasswordPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/auth/confirm-reset", {
+      const res = await fetch("https://investment-site-x6tr.onrender.com/auth/confirm-reset", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

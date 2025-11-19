@@ -20,7 +20,7 @@ export default function AdminDashboard() {
   // ============================================
   const fetchUsers = async () => {
     try {
-      const res = await fetch("http://192.168.1.87:5000/users/all");
+      const res = await fetch("https://investment-site-x6tr.onrender.com/users/all");
       const data = await res.json();
 
       const usersArray = Array.isArray(data)
@@ -45,7 +45,7 @@ export default function AdminDashboard() {
 
     setLoading(`${userId}-reverse`);
     try {
-      const res = await fetch("http://192.168.1.87:5000/users/admin/reverse-payment", {
+      const res = await fetch("https://investment-site-x6tr.onrender.com/users/admin/reverse-payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -81,7 +81,7 @@ export default function AdminDashboard() {
 
     setLoading(`${email}-fund`);
     try {
-      const res = await fetch("http://192.168.1.87:5000/auth/admin/fund", {
+      const res = await fetch("https://investment-site-x6tr.onrender.com/auth/admin/fund", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, amount: Number(amt) }),
@@ -111,7 +111,7 @@ export default function AdminDashboard() {
 
     setLoading(`${email}-reset`);
     try {
-      const res = await fetch("http://192.168.1.87:5000/auth/admin/reset-balance", {
+      const res = await fetch("https://investment-site-x6tr.onrender.com/auth/admin/reset-balance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -139,7 +139,7 @@ export default function AdminDashboard() {
   const restrictUser = async (email, restricted) => {
     setLoading(`${email}-restrict`);
     try {
-      const res = await fetch("http://192.168.1.87:5000/auth/admin/restrict", {
+      const res = await fetch("https://investment-site-x6tr.onrender.com/auth/admin/restrict", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, restricted }),
@@ -169,7 +169,7 @@ export default function AdminDashboard() {
 
     setLoading(`${email}-delete`);
     try {
-      const res = await fetch(`http://192.168.1.87:5000/auth/admin/delete/${encodeURIComponent(email)}`, {
+      const res = await fetch(`https://investment-site-x6tr.onrender.com/auth/admin/delete/${encodeURIComponent(email)}`, {
         method: "DELETE",
       });
 

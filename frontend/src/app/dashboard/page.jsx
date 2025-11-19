@@ -300,7 +300,7 @@ const user = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("us
   const loadUnread = async () => {
   if (!user?.id) return;
 
-  const res = await fetch(`http://192.168.1.87:5000/notifications/unread-count/${user.id}`);
+  const res = await fetch(`https://investment-site-x6tr.onrender.com/notifications/unread-count/${user.id}`);
   const count = await res.json();
   setUnread(count);
 };
@@ -342,7 +342,7 @@ const user = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("us
 useEffect(() => {
   if (!user?.id) return;
 
-  const ws = new WebSocket("ws://192.168.1.87:5000");
+  const ws = new WebSocket("ws://https://investment-site-x6tr.onrender.com");
 
   ws.onmessage = (event) => {
     const incoming = JSON.parse(event.data);
@@ -365,7 +365,7 @@ useEffect(() => {
 useEffect(() => {
   if (!user?.id) return;
 
-  fetch(`http://192.168.1.87:5000/trading-accounts/user/${user.id}`)
+  fetch(`https://investment-site-x6tr.onrender.com/trading-accounts/user/${user.id}`)
     .then((res) => res.json())
     .then((accounts) => setTradingAccounts(accounts))
     .catch((err) =>
@@ -394,7 +394,7 @@ useEffect(() => {
     }
 
     setLoading(true);
-    fetch(`http://192.168.1.87:5000/dashboard/${encodeURIComponent(email)}`)
+    fetch(`https://investment-site-x6tr.onrender.com/dashboard/${encodeURIComponent(email)}`)
       .then(async (res) => {
         if (!res.ok) {
           const txt = await res.text().catch(() => null);

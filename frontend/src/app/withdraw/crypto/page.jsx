@@ -164,7 +164,7 @@ export default function WithdrawCrypto() {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
 
     try {
-      const res = await fetch("http://192.168.1.87:5000/wallet/withdraw", {
+      const res = await fetch("https://investment-site-x6tr.onrender.com/wallet/withdraw", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -25,7 +25,7 @@ useEffect(() => {
 
   if (!userObj?.email) return;
 
-  fetch(`http://192.168.1.87:5000/users/me-by-email/${userObj.email}`)
+  fetch(`https://investment-site-x6tr.onrender.com/users/me-by-email/${userObj.email}`)
     .then(res => res.json())
     .then(data => {
       if (data?.id) setSenderId(data.id);
@@ -75,7 +75,7 @@ const handleSubmit = async (e) => {
 
   try {
     // ✅ Call your real backend transfer endpoint
-    const response = await fetch("http://192.168.1.87:5000/users/transfer", {
+    const response = await fetch("https://investment-site-x6tr.onrender.com/users/transfer", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -17,7 +17,7 @@ export default function TransferPage() {
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     if (!user?.id) return;
-    fetch(`http://192.168.1.87:5000/wallet/transactions/${user.id}`)
+    fetch(`https://investment-site-x6tr.onrender.com/wallet/transactions/${user.id}`)
       .then((res) => res.json())
       .then((data) => {
         // Safely handle data no matter its shape
@@ -38,7 +38,7 @@ export default function TransferPage() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://192.168.1.87:5000/wallet/transfer", {
+      const res = await fetch("https://investment-site-x6tr.onrender.com/wallet/transfer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
        body: JSON.stringify({
