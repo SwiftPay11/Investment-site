@@ -14,14 +14,16 @@ import * as nodemailer from 'nodemailer';
 import { User } from '../users/users.entity';
 
 // GLOBAL transporter (recommended)
+// GLOBAL transporter (Resend SMTP)
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: "smtp.resend.com",
+  port: 587,
+  secure: false,
   auth: {
-    user: 'noreply.nexttrade@gmail.com',
-    pass: 'kruo claw boaa hklk', // Google App Password
+    user: "resend",
+    pass: process.env.RESEND_API_KEY, // ← store API key in env
   },
-});
-
+  })
 @Injectable()
 export class AuthService {
   constructor(
