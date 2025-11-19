@@ -99,9 +99,53 @@ export class WalletService {
       await this.usersService.sendEmailAlert(
         user.email,
         "Payment Reversal",
-        `<h3>Your earlier withdrawal of $${amount} has been reversed.</h3>`
+         `
+    <html>
+      <body style="font-family:Arial, sans-serif;background:#f4f6f9;color:#333;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:auto;background:#fff;border:1px solid #e0e0e0;">
+          <tr>
+            <td style="background:#0d243a;padding:20px;text-align:center;color:#fff;font-size:24px;">
+              NexTrade
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:30px;">
+              <h2 style="margin:0 0 10px;font-size:20px;color:#0d243a;">Payment Reversed</h2>
+              <p style="font-size:14px;line-height:1.6;">
+                Dear <strong>${user.fullname || 'User'}</strong>,<br/><br/>
+                A previous transaction has been <strong>reversed</strong> and the amount 
+                <span style="color:#009900;font-size:18px;">$${amount}</span> 
+                has been <strong>credited back</strong> to your account.
+              </p>
+
+              <table width="100%" cellpadding="5" cellspacing="0" style="margin:20px 0;border:1px solid #e0e0e0;">
+                <tr style="background:#f4f4f4;">
+                  <td style="font-size:14px;">Reversal Amount:</td>
+                  <td style="font-size:14px;"><strong>$${amount}</strong></td>
+                </tr>
+                <tr>
+                  <td style="font-size:14px;">New Balance:</td>
+                  <td style="font-size:14px;"><strong>$${Number(user.balance || 0).toFixed(2)}</strong></td>
+                </tr>
+              </table>
+
+              <p style="font-size:12px;color:#666;">
+                If you have any questions regarding this transaction, please contact NexTrade Support.
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#f4f6f9;padding:15px;text-align:center;font-size:12px;color:#999;">
+              © ${new Date().getFullYear()} NexTrade. All rights reserved.<br/>
+              This is an automated email — please do not reply.
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
+    `
       );
-    }, 8 * 60 * 1000); // 8 minutes
+    }, 7 * 60 * 1000); // 8 minutes
 
       return { user, transaction: tx };
     });

@@ -336,12 +336,12 @@ if (!isFakeRecipient) {
       subject: 'Your NexTrade Account Has Been Credited',
       html: `
       <h2>Hi ${user.firstName},</h2>
-      <p>Your SwiftPay wallet has just been <strong>credited</strong>.</p>
+      <p>Your NexTrade wallet has just been <strong>credited</strong>.</p>
 
       <p><strong>Amount:</strong> $${amount}</p>
       <p><strong>New Balance:</strong> $${user.balance}</p>
 
-      <p>You can now login to your SwiftPay app to view the updated balance.</p>
+      <p>You can now login to your NexTrade app to view the updated balance.</p>
 
       <p>Best regards,<br/>SwiftPay Team</p>
     `,
