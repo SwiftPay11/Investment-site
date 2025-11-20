@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Confetti from "react-confetti";
 
 export default function CreateAccountPage() {
   const router = useRouter();
   const [creating, setCreating] = useState(false);
   const [error, setError] = useState("");
   const [user, setUser] = useState(null);
+  const [successPopup, setSuccessPopup] = useState(false); // ✅ NEW
 
   // Load logged-in user from localStorage
   useEffect(() => {
@@ -50,9 +52,10 @@ export default function CreateAccountPage() {
         throw new Error(msg || "Failed to create account");
       }
 
-      // optional: const created = await res.json();
-      alert("Trading account created successfully.");
-      router.push("/dashboard");
+      // ⭐ SUCCESS POPUP
+      setSuccessPopup(true);
+      setTimeout(() => router.push("/dashboard"), 3000);
+
     } catch (err) {
       console.error("Create trading account error:", err);
       setError(err.message || "Error creating trading account");
@@ -67,6 +70,44 @@ export default function CreateAccountPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#020817] via-[#060b1e] to-[#0a0f29] flex items-center justify-center px-4 text-white">
+      {/* SUCCESS POPUP */}
+      {successPopup && (
+        <>
+          <Confetti numberOfPieces={250} recycle={false} />
+
+          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]">
+            <div className="bg-white rounded-2xl p-8 w-[90%] max-w-[360px] text-center shadow-xl animate-scaleIn">
+
+              <div className="mx-auto mb-4 w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center animate-pop">
+                <span className="text-4xl font-bold">✓</span>
+              </div>
+
+              <h2 className="text-xl font-semibold text-gray-900">
+                Account Created!
+              </h2>
+
+              <p className="text-gray-700 mt-1">
+                Your trading account has been successfully created.
+              </p>
+            </div>
+          </div>
+
+          <style jsx>{`
+            @keyframes scaleIn {
+              0% { transform: scale(0.8); opacity: 0; }
+              100% { transform: scale(1); opacity: 1; }
+            }
+            .animate-scaleIn { animation: scaleIn 0.25s ease-out; }
+
+            @keyframes pop {
+              0% { transform: scale(0.4); opacity: 0; }
+              100% { transform: scale(1); opacity: 1; }
+            }
+            .animate-pop { animation: pop 0.3s ease-out; }
+          `}</style>
+        </>
+      )}
+
       {/* Centered modal-style card */}
       <div className="w-full max-w-md bg-white/10 border border-white/10 rounded-2xl shadow-xl p-6 relative">
         <div className="flex justify-between items-center mb-4">
