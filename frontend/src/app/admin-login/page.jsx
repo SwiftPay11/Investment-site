@@ -8,15 +8,31 @@ export default function AdminLogin() {
   const [error, setError] = useState("");
   const router = useRouter();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    if (email === "admin@nexttrade.com" && password === "nexttrade123") {
-      localStorage.setItem("nexttrade_admin", "true");
-      router.push("/admin-dashboard");
-    } else {
+ const handleLogin = async (e) => {
+  e.preventDefault();
+  setError("");
+
+  try {
+    const res = await fetch(`https://investment-site-x6tr.onrender.com/auth/admin-login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!res.ok) {
       setError("Invalid admin credentials");
+      return;
     }
-  };
+
+    const data = await res.json();
+
+    document.cookie = `nexttrade_admin=${data.token}; path=/;`;
+
+    router.push("/admin-dashboard");
+  } catch (err) {
+    setError("Server error. Try again.");
+  }
+};
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#0d243a] text-white">
