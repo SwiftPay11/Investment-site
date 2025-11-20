@@ -64,7 +64,7 @@ export class AuthService {
 
   // Send email
   await this.resend.emails.send({
-    from: '"NexTrade Login" <onboarding@resend.dev>',
+    from: '"NexTrade Login" <"noreply@nextrade.pro">',
     to: user.email,
     subject: "Your NexTrade Login Verification Code",
     html: `
