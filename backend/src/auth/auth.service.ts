@@ -64,7 +64,7 @@ export class AuthService {
 
   // Send email
   await this.resend.emails.send({
-    from: '"NexTrade Login" <"noreply@nextrade.pro">',
+    from: 'NexTrade Login <noreply@nextrade.pro>',
     to: user.email,
     subject: "Your NexTrade Login Verification Code",
     html: `
@@ -196,7 +196,7 @@ async confirmPasswordReset(email: string, code: string, newPassword: string) {
 // EMAIL SENDER (reuse your pattern)
 private async sendEmail(to: string, subject: string, html: string) {
   await this.resend.emails.send({
-    from: '"NexTrade" <onboarding@resend.dev>',
+    from: 'NexTrad <noreply@nextrade.pro>',
     to,
     subject,
     html,
