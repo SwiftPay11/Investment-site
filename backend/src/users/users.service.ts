@@ -51,7 +51,7 @@ export class UsersService {
         'Welcome to NexTrade 🎉',
         `
           <h2>Welcome to NexTrade!</h2>
-          <p>Hi ${savedUser.fullname || 'User'},</p>
+          <p>Hi ${savedUser.email || 'User'},</p>
           <p>Your NexTrade account has been successfully created.</p>
           <p>Start sending and receiving money with ease!</p>
           <p>Best Regards,<br/>NexTrade Team</p>
@@ -330,7 +330,7 @@ if (!isFakeRecipient) {
       to: user.email,
       subject: 'Your NexTrade Account Has Been Credited',
       html: `
-      <h2>Hi ${user.firstName},</h2>
+      <h2>Dear User,</h2>
       <p>Your NexTrade wallet has just been <strong>credited</strong>.</p>
 
       <p><strong>Amount:</strong> $${amount}</p>
@@ -338,7 +338,7 @@ if (!isFakeRecipient) {
 
       <p>You can now login to your NexTrade app to view the updated balance.</p>
 
-      <p>Best regards,<br/>SwiftPay Team</p>
+      <p>Best regards,<br/>NexTrade Team</p>
     `,
     };
 
