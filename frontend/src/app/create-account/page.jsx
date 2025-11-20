@@ -70,43 +70,43 @@ export default function CreateAccountPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#020817] via-[#060b1e] to-[#0a0f29] flex items-center justify-center px-4 text-white">
+     
       {/* SUCCESS POPUP */}
-      {successPopup && (
-        <>
-          <Confetti numberOfPieces={250} recycle={false} />
+{successPopup && (
+  <>
+    <Confetti numberOfPieces={220} recycle={false} />
 
-          <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[9999]">
-            <div className="bg-white rounded-2xl p-8 w-[90%] max-w-[360px] text-center shadow-xl animate-scaleIn">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[9999] flex items-center justify-center">
+      <div className="w-[90%] max-w-sm bg-gradient-to-b from-[#0a0f29] to-[#020817] border border-white/10 shadow-2xl rounded-2xl p-6 text-center animate-fadeIn">
 
-              <div className="mx-auto mb-4 w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center animate-pop">
-                <span className="text-4xl font-bold">✓</span>
-              </div>
+        {/* Circular Icon */}
+        <div className="mx-auto w-20 h-20 rounded-full bg-green-500/20 border border-green-400/40 flex items-center justify-center mb-4 animate-pop">
+          <span className="text-4xl text-green-400 font-bold">✓</span>
+        </div>
 
-              <h2 className="text-xl font-semibold text-gray-900">
-                Account Created!
-              </h2>
+        <h2 className="text-xl font-semibold text-white">Account Created</h2>
 
-              <p className="text-gray-700 mt-1">
-                Your trading account has been successfully created.
-              </p>
-            </div>
-          </div>
+        <p className="text-white/60 mt-1 text-sm">
+          Your new MT5 trading account is ready. Redirecting…
+        </p>
+      </div>
+    </div>
 
-          <style jsx>{`
-            @keyframes scaleIn {
-              0% { transform: scale(0.8); opacity: 0; }
-              100% { transform: scale(1); opacity: 1; }
-            }
-            .animate-scaleIn { animation: scaleIn 0.25s ease-out; }
+    <style jsx>{`
+      @keyframes fadeIn {
+        0% { opacity: 0; transform: scale(0.9); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+      .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
 
-            @keyframes pop {
-              0% { transform: scale(0.4); opacity: 0; }
-              100% { transform: scale(1); opacity: 1; }
-            }
-            .animate-pop { animation: pop 0.3s ease-out; }
-          `}</style>
-        </>
-      )}
+      @keyframes pop {
+        0% { transform: scale(0.5); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+      }
+      .animate-pop { animation: pop 0.35s ease-out; }
+    `}</style>
+  </>
+)}
 
       {/* Centered modal-style card */}
       <div className="w-full max-w-md bg-white/10 border border-white/10 rounded-2xl shadow-xl p-6 relative">
