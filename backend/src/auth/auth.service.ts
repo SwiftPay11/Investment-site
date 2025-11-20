@@ -233,7 +233,7 @@ async verifyLoginCode(email: string, code: string) {
   };
 }
 
- async adminLogin(email: string, password: string) {
+  async adminLogin(email: string, password: string) {
   const admin = await this.usersRepo.findOne({ where: { email } });
 
   if (!admin || !admin.isAdmin) {
@@ -246,7 +246,7 @@ async verifyLoginCode(email: string, code: string) {
     throw new UnauthorizedException("Invalid admin password");
   }
 
-  return "admin-verified"; // or JWT later
+  // SUCCESS → return something for frontend
+  return { token: "admin-verified", adminId: admin.id };
 }
-
 }

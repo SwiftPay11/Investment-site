@@ -6,8 +6,10 @@ async function bootstrap() {
 
   app.enableCors({
     origin: [
+      "https://www.nextrade.pro",
+      "https://nextrade.pro",
       "https://nextradex.netlify.app",
-      "http://localhost:3000"
+      "http://localhost:3000",
     ],
     credentials: true,
   });
