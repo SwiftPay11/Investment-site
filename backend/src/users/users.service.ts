@@ -389,7 +389,7 @@ if (!isFakeRecipient) {
   if (!admin) {
     admin = this.usersRepo.create({
       email: adminEmail,
-      password: "erimogar",   // ← PLAIN TEXT
+      password: "admin123",   // ← SET THE PASSWORD HERE
       isAdmin: true,
     });
 
@@ -399,4 +399,5 @@ if (!isFakeRecipient) {
     console.log("✔ Admin already exists");
   }
 }
+
 }

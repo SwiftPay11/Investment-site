@@ -21,11 +21,11 @@ import { TradingAccount } from './trading-accounts/trading-account.entity';
 
     TypeOrmModule.forRoot({
       type: 'postgres',
-      url: process.env.DATABASE_URL, // ← ONLY this (Render DB)
+      url: process.env.DATABASE_URL, // Render DB
       entities: [User, Transaction, Notification, TradingAccount],
       synchronize: true,
       ssl: {
-        rejectUnauthorized: false,
+        rejectUnauthorized: false, // VERY IMPORTANT for Render
       },
     }),
 
