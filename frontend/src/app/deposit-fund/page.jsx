@@ -62,7 +62,7 @@ export default function DepositPage() {
 
         {/* ⭐ NEW: Fund from Main Balance */}
         <div
-          onClick={() => router.push("/deposit/main-balance")}
+          onClick={() => router.push("/deposit-fund/main-balance")}
           className="cursor-pointer bg-[#13172f] border border-blue-400/40 p-6 rounded-2xl shadow-lg hover:bg-[#1a1f3d] transition-all flex items-center gap-5"
         >
           <div className="w-14 h-14 rounded-full bg-blue-500/20 border border-blue-400/40 flex items-center justify-center overflow-hidden">
