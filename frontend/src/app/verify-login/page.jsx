@@ -81,7 +81,7 @@ export default function VerifyLoginPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#020817] via-[#060b1e] to-[#0a0f29] text-white flex flex-col">
       <header className="flex justify-between items-center px-10 py-5 bg-transparent">
-        <h1 className="text-3xl font-bold text-blue-400">CryptoFX</h1>
+        <h1 className="text-3xl font-bold text-blue-400">NexTrade</h1>
       </header>
 
       <main className="flex flex-1 justify-center items-center px-4">
@@ -124,7 +124,7 @@ export default function VerifyLoginPage() {
       </main>
 
       <footer className="text-center text-xs text-gray-500 py-4 border-t border-blue-900/40">
-        © {new Date().getFullYear()} CryptoFX Markets. All rights reserved.
+        © {new Date().getFullYear()} NexTrade Markets. All rights reserved.
       </footer>
     </div>
   );
