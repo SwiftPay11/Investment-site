@@ -342,7 +342,7 @@ const user = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("us
 useEffect(() => {
   if (!user?.id) return;
 
-  const ws = new WebSocket("ws://https://investment-site-x6tr.onrender.com");
+  const ws = new WebSocket("wss://https://investment-site-x6tr.onrender.com");
 
   ws.onmessage = (event) => {
     const incoming = JSON.parse(event.data);
