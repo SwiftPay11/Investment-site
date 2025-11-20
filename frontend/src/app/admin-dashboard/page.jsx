@@ -50,7 +50,7 @@ export default function AdminDashboard() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           adminEmail: "admin@nexttrade.com",
-          adminPassword: "erimogar",
+          adminPassword: "admin123",
           userId,
           amount: Number(amount),
         }),
