@@ -26,7 +26,8 @@ export default function AdminLogin() {
 
     const data = await res.json();
 
-    document.cookie = `nexttrade_admin=${data.token}; path=/;`;
+    // Store admin session
+    sessionStorage.setItem("isAdmin", "true");
 
     router.push("/admin-dashboard");
   } catch (err) {
