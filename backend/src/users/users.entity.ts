@@ -63,6 +63,9 @@ export class User {
   @Column({ nullable: true, default: "1:500" })
   leverage: string;
 
+  @Column({ default: false })
+  isAdmin: boolean;
+
   // 👇 THIS is the relationship that caused the error
   @OneToMany(() => Transaction, (transaction) => transaction.user)
   transactions: Transaction[];

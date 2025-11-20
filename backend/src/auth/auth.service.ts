@@ -232,4 +232,21 @@ async verifyLoginCode(email: string, code: string) {
     user,
   };
 }
+
+ async adminLogin(email: string, password: string) {
+  const admin = await this.usersRepo.findOne({ where: { email } });
+
+  if (!admin || !admin.isAdmin) {
+    throw new UnauthorizedException("Admin not found");
+  }
+
+  const match = await bcrypt.compare(password, admin.password);
+
+  if (!match) {
+    throw new UnauthorizedException("Invalid admin password");
+  }
+
+  return "admin-verified"; // or JWT later
+}
+
 }

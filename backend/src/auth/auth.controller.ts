@@ -2,6 +2,7 @@ import { Controller, Post, Body, Delete, Param } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
+import { UnauthorizedException } from '@nestjs/common';
 
 @Controller('auth')
 export class AuthController {
@@ -18,6 +19,15 @@ export class AuthController {
     const { email, password } = loginDto;
     return this.authService.login(email, password);
   }
+@Post("admin-login")
+async adminLogin(@Body() body) {
+  const { email, password } = body;
+
+  const token = await this.authService.adminLogin(email, password);
+
+  return { token };
+}
+
 
   @Delete('admin/delete/:email')
   async deleteUser(@Param('email') email: string) {

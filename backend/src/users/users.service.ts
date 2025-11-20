@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { User } from './users.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 import { Resend } from 'resend';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -380,4 +381,24 @@ if (!isFakeRecipient) {
 
     return await this.usersRepo.save(user);
   }
+
+  async createAdmin() {
+  const adminEmail = "admin@nexttrade.com";
+
+  let admin = await this.usersRepo.findOne({ where: { email: adminEmail } });
+
+  if (!admin) {
+    admin = this.usersRepo.create({
+      email: adminEmail,
+      password: await bcrypt.hash("nexttrade123", 10),
+      isAdmin: true,
+    });
+
+    await this.usersRepo.save(admin);
+    console.log("✔ Admin account created");
+  } else {
+    console.log("✔ Admin already exists");
+  }
+}
+
 }
