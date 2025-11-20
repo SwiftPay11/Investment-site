@@ -709,7 +709,7 @@ useEffect(() => {
             <div className="flex gap-2">
               {/* FUND BUTTON */}
               <button
-                onClick={() => router.push("/deposit")}
+                onClick={() => router.push("/deposit-fund")}
                 className="px-3 py-2 bg-white/6 text-white/80 rounded hover:bg-white/10"
               >
                 {t.fund}
