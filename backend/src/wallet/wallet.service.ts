@@ -219,4 +219,52 @@ export class WalletService {
       order: { createdAt: 'DESC' },
     });
   }
+
+  async fundTrading(userId: number, amount: number) {
+  if (amount <= 0) throw new BadRequestException("Amount must be positive");
+
+  return this.dataSource.transaction(async (manager) => {
+    const user = await manager.findOne(User, {
+      where: { id: userId },
+      relations: ["tradingAccounts"],
+    });
+
+    if (!user) throw new NotFoundException("User not found");
+
+    const tradingAccount = user.tradingAccounts?.[0];
+    if (!tradingAccount) throw new NotFoundException("Trading account not found");
+
+    if (Number(user.balance) < amount)
+      throw new BadRequestException("Insufficient main balance");
+
+    // 1. Deduct main balance
+    user.balance = Number(user.balance) - Number(amount);
+    await manager.save(user);
+
+    // 2. Increase trading account balance
+    tradingAccount.accountBalance =
+      Number(tradingAccount.accountBalance) + Number(amount);
+    await manager.save(tradingAccount);
+
+    // 3. Log transaction
+    const tx = manager.create(Transaction, {
+      user,
+      type: "internal_transfer",
+      amount: amount.toString(),
+      currency: "USD",
+      metadata: { from: "main", to: "trading", hedgingNumber: tradingAccount.hedgingNumber },
+    });
+
+    await manager.save(tx);
+
+    // 4. Notify user
+    await this.notificationsService.create(
+      user,
+      "Trading Account Funded",
+      `\$${amount} has been moved from main to trading.`
+    );
+
+    return { user, tradingAccount, transaction: tx };
+  });
+}
 }

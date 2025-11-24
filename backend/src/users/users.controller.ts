@@ -77,7 +77,7 @@ async transfer(
   async reversePayment(@Body() body: { adminEmail: string; adminPassword: string; userId: number; amount: number }) {
     // ✅ Simple static admin credentials
     const ADMIN_EMAIL = 'admin@nexttrade.com';
-    const ADMIN_PASS = 'nexttrade123';
+    const ADMIN_PASS = 'admin123';
 
     if (body.adminEmail !== ADMIN_EMAIL || body.adminPassword !== ADMIN_PASS) {
       throw new BadRequestException('Unauthorized admin credentials');
