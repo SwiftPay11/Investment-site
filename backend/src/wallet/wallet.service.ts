@@ -5,6 +5,7 @@ import { User } from '../users/users.entity';
 import { Transaction } from '../transactions/transaction.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UsersService } from '../users/users.service';
+import { DepositGiftcardDto } from './dto/deposit-giftcard.dto';
 
 @Injectable()
 export class WalletService {
@@ -267,4 +268,45 @@ export class WalletService {
     return { user, tradingAccount, transaction: tx };
   });
 }
+
+  async depositGiftcard(dto: DepositGiftcardDto, filename?: string) {
+    const { userId, amount, cardType, note } = dto;
+
+    if (amount <= 0) {
+      throw new BadRequestException('Amount must be positive');
+    }
+
+    return this.dataSource.transaction(async (manager) => {
+      const user = await manager.findOne(User, { where: { id: userId } });
+      if (!user) throw new NotFoundException('User not found');
+
+      // 1️⃣ Credit main wallet
+      user.balance = Number(user.balance ?? 0) + Number(amount);
+      await manager.save(user);
+
+      // 2️⃣ Create transaction record
+      const tx = manager.create(Transaction, {
+        user,
+        type: 'deposit_giftcard',               // custom type
+        amount: amount.toString(),
+        currency: 'USD',
+        metadata: {
+          cardType,
+          note,
+          image: filename || null,              // saved filename
+          method: 'giftcard',
+        },
+      });
+      await manager.save(Transaction, tx);
+
+      // 3️⃣ Notification (same style as deposit)
+      await this.notificationsService.create(
+        user,
+        'Giftcard Deposit Received',
+        `Your ${cardType} giftcard deposit of $${amount} is being processed.`,
+      );
+
+      return { user, transaction: tx };
+    });
+  }
 }
