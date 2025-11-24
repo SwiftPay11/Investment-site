@@ -24,19 +24,14 @@ export default function MainBalanceDeposit() {
     setError("");
 
     try {
-      const res = await fetch(
-        "https://investment-site-x6tr.onrender.com/wallet/transfer",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userId: user.id,
-            amount: Number(amount),
-            from: "main",
-            to: "trading",
-          }),
-        }
-      );
+    const res = await fetch(`https://investment-site-x6tr.onrender.com/wallet/fund-trading`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    userId: user.id,
+    amount: Number(amount),
+  }),
+});
 
       if (!res.ok) {
         const msg = await res.text();
