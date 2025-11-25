@@ -4,8 +4,8 @@ import { DepositDto } from './dto/deposit.dto';
 import { DepositGiftcardDto } from './dto/deposit-giftcard.dto'; // ⭐ NEW
 import { FileInterceptor } from '@nestjs/platform-express';
 import { UseInterceptors, UploadedFile } from '@nestjs/common';
-import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { BadRequestException } from '@nestjs/common';
+import * as multer from 'multer';
 import { WithdrawDto } from './dto/withdraw.dto';
 import { TransferDto } from './dto/transfer.dto';
 import { FundTradingDto } from './dto/fund-trading.dto';
@@ -42,15 +42,21 @@ export class WalletController {
     return { success: true, data: res };
   }
 
-  @Post('deposit-giftcard')
-  @UseInterceptors(FileInterceptor('file'))
-  async depositGiftcard(
-    @Body() dto: DepositGiftcardDto,
-    @UploadedFile() file: any,
-  ) {
-    const res = await this.walletService.depositGiftcard(dto, file);
-    return { success: true, data: res };
+ @Post('deposit-giftcard')
+@UseInterceptors(FileInterceptor('file', {
+  storage: multer.memoryStorage(),          // ⭐ Fixed
+}))
+async depositGiftcard(
+  @Body() dto: DepositGiftcardDto,
+  @UploadedFile() file: any,
+) {
+  if (!file) {
+    throw new BadRequestException('Giftcard image is required');
   }
+
+  const res = await this.walletService.depositGiftcard(dto, file);
+  return { success: true, data: res };
+}
 
   @Get('transactions/:userId')
   async transactions(@Param('userId') userId: number) {

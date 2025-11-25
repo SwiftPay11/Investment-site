@@ -283,7 +283,7 @@ export class WalletService {
   }
 
   // 1️⃣ Upload to Cloudinary
-  const imageUrl = await this.cloudinaryService.uploadImage(file.path);
+  const imageUrl = await this.cloudinaryService.uploadImage(file.buffer)
 
   return this.dataSource.transaction(async (manager) => {
     const user = await manager.findOne(User, { where: { id: userId } });
