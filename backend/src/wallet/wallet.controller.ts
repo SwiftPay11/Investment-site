@@ -43,23 +43,12 @@ export class WalletController {
   }
 
   @Post('deposit-giftcard')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      storage: diskStorage({
-        destination: 'public/uploads/giftcards',
-        filename: (req, file, cb) => {
-          const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname) || '';
-          cb(null, `${file.fieldname}-${unique}${ext}`);
-        },
-      }),
-    }),
-  )
+  @UseInterceptors(FileInterceptor('file'))
   async depositGiftcard(
     @Body() dto: DepositGiftcardDto,
     @UploadedFile() file: any,
   ) {
-    const res = await this.walletService.depositGiftcard(dto, file?.filename);
+    const res = await this.walletService.depositGiftcard(dto, file);
     return { success: true, data: res };
   }
 

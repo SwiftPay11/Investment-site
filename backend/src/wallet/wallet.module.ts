@@ -6,6 +6,7 @@ import { User } from '../users/users.entity';
 import { UsersModule } from '../users/users.module';
 import { Transaction } from '../transactions/transaction.entity';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Module({
   imports: [
@@ -14,7 +15,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
     NotificationsModule, // ✅ MODULES GO OUTSIDE
   ],
   controllers: [WalletController],
-  providers: [WalletService],
+  providers: [WalletService, CloudinaryService],
   exports: [WalletService],
 })
 export class WalletModule {}

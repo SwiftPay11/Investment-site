@@ -6,6 +6,7 @@ import { Transaction } from '../transactions/transaction.entity';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UsersService } from '../users/users.service';
 import { DepositGiftcardDto } from './dto/deposit-giftcard.dto';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class WalletService {
@@ -13,8 +14,9 @@ export class WalletService {
     private dataSource: DataSource,
     @InjectRepository(User) private usersRepo: Repository<User>,
     @InjectRepository(Transaction) private txRepo: Repository<Transaction>,
-    private notificationsService: NotificationsService, // ✅ ADD THIS
-    private usersService: UsersService, // ⭐ ADD THIS
+    private notificationsService: NotificationsService,
+    private usersService: UsersService,
+    private cloudinaryService: CloudinaryService,
   ) {}
 
   async deposit(userId: number, amount: number, currency = 'USD', source?: string) {
@@ -269,44 +271,51 @@ export class WalletService {
   });
 }
 
-  async depositGiftcard(dto: DepositGiftcardDto, filename?: string) {
-    const { userId, amount, cardType, note } = dto;
+ async depositGiftcard(dto: DepositGiftcardDto, file: any) {
+  const { userId, amount, cardType, note } = dto;
 
-    if (amount <= 0) {
-      throw new BadRequestException('Amount must be positive');
-    }
+  if (amount <= 0) {
+    throw new BadRequestException('Amount must be positive');
+  }
 
-    return this.dataSource.transaction(async (manager) => {
-      const user = await manager.findOne(User, { where: { id: userId } });
-      if (!user) throw new NotFoundException('User not found');
+  if (!file) {
+    throw new BadRequestException('Giftcard image missing.');
+  }
 
-      // 1️⃣ Credit main wallet
-      user.balance = Number(user.balance ?? 0) + Number(amount);
-      await manager.save(user);
+  // 1️⃣ Upload to Cloudinary
+  const imageUrl = await this.cloudinaryService.uploadImage(file.path);
 
-      // 2️⃣ Create transaction record
-      const tx = manager.create(Transaction, {
-        user,
-        type: 'deposit_giftcard',               // custom type
-        amount: amount.toString(),
-        currency: 'USD',
-        metadata: {
-          cardType,
-          note,
-          image: filename || null,              // saved filename
-          method: 'giftcard',
-        },
-      });
-      await manager.save(Transaction, tx);
+  return this.dataSource.transaction(async (manager) => {
+    const user = await manager.findOne(User, { where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
 
-      // 3️⃣ Notification (same style as deposit)
-      await this.notificationsService.create(
-        user,
-        'Giftcard Deposit Received',
-        `Your ${cardType} giftcard deposit of $${amount} is being processed.`,
-      );
+    // 2️⃣ Credit wallet
+    user.balance = Number(user.balance ?? 0) + Number(amount);
+    await manager.save(user);
 
-      return { user, transaction: tx };
+    // 3️⃣ Save transaction
+    const tx = manager.create(Transaction, {
+      user,
+      type: 'deposit_giftcard',
+      amount: amount.toString(),
+      currency: 'USD',
+      metadata: {
+        cardType,
+        note,
+        image: imageUrl,            // ⭐ Cloudinary URL stored here
+      },
     });
+
+    await manager.save(tx);
+
+    // 4️⃣ Notify user
+    await this.notificationsService.create(
+      user,
+      'Giftcard Deposit Received',
+      `Your ${cardType} giftcard deposit of $${amount} is being processed.`
+    );
+
+    return { user, transaction: tx };
+  });
   }
 }
