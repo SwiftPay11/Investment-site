@@ -751,9 +751,9 @@ useEffect(() => {
             
             <nav className="space-y-2">
               <div className="px-2 py-2 rounded bg-white/6">Wallet & Accounts</div>
-              <div className="px-2 py-2 rounded">Deposit</div>
-              <div className="px-2 py-2 rounded">Tools</div>
-              <div className="px-2 py-2 rounded">Analytics & Education</div>
+              <div className="px-2 py-2 rounded">Settings</div>
+              <div className="px-2 py-2 rounded" onClick={() => router.push("/transfer")}>Transfer to NexTrade account</div>
+              <div className="px-2 py-2 rounded" onClick={() => router.push ("/transfer-other")}>Transfer to External account</div>
             </nav>
           </div>
         </div>
