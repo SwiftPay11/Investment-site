@@ -84,7 +84,7 @@ export default function DepositGiftcardPage() {
       formData.append("file", file);
 
       const res = await fetch(
-        "https://investment-site-x6tr.onrender.com/wallet/deposit-giftcard",
+        "http://localhost:5000/wallet/deposit-giftcard",
         {
           method: "POST",
           body: formData,
