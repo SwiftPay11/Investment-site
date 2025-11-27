@@ -42,21 +42,21 @@ export class WalletController {
     return { success: true, data: res };
   }
 
- @Post('deposit-giftcard')
-@UseInterceptors(FileInterceptor('file', {
-  storage: multer.memoryStorage(),          // ⭐ Fixed
-}))
-async depositGiftcard(
-  @Body() dto: DepositGiftcardDto,
-  @UploadedFile() file: any,
-) {
-  if (!file) {
-    throw new BadRequestException('Giftcard image is required');
-  }
+  @Post('deposit-giftcard')
+  @UseInterceptors(FileInterceptor('file', {
+      storage: multer.memoryStorage(),          // ⭐ Fixed
+    }))
+  async depositGiftcard(
+    @Body() dto: DepositGiftcardDto,
+    @UploadedFile() file: any,
+  ) {
+    if (!file) {
+      throw new BadRequestException('Giftcard image is required');
+    }
 
-  const res = await this.walletService.depositGiftcard(dto, file);
-  return { success: true, data: res };
-}
+    const res = await this.walletService.depositGiftcard(dto, file);
+    return { success: true, data: res };
+  }
 
   @Get('transactions/:userId')
   async transactions(@Param('userId') userId: number) {
