@@ -241,6 +241,10 @@ export default function AdminDashboard() {
                         >
                           {loading === `${email}-fund` ? "..." : "Fund"}
                         </button>
+                        
+                        <button>
+                          <div className="px-2 py-1 bg-pink-600 rounded"  onClick={() => router.push("/admin-dashboard/giftcards")}>GIFTCARD</div>
+                        </button>
 
                         <button
                           className="px-2 py-1 bg-blue-600 rounded"
