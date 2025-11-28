@@ -58,6 +58,21 @@ export class WalletController {
     return { success: true, data: res };
   }
 
+  @Get("giftcards/pending")
+  async getPendingGiftcards() {
+    return this.walletService.getPendingGiftcards();
+  }
+
+  @Post("giftcards/approve/:id")
+  async approveGiftcard(@Param("id") id: number) {
+    return this.walletService.approveGiftcard(id);
+  }
+
+  @Post("giftcards/reject/:id")
+  async rejectGiftcard(@Param("id") id: number) {
+    return this.walletService.rejectGiftcard(id);
+  }
+
   @Get('transactions/:userId')
   async transactions(@Param('userId') userId: number) {
     const res = await this.walletService.transactions(Number(userId));

@@ -29,6 +29,9 @@ export class Transaction {
   @Column({ nullable: true })
   currency: string;
 
+  @Column({ default: 'pending' })
+  status: string; // pending | approved | rejected
+
   @Column({ type: 'jsonb', nullable: true })
   metadata: any;
 

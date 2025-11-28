@@ -271,51 +271,93 @@ export class WalletService {
   });
 }
 
- async depositGiftcard(dto: DepositGiftcardDto, file: any) {
-  const { userId, amount, cardType, note } = dto;
+async depositGiftcard(dto: DepositGiftcardDto, file: any) {
+  if (!file) throw new BadRequestException("Giftcard image is required");
 
-  if (amount <= 0) {
-    throw new BadRequestException('Amount must be positive');
-  }
-
-  if (!file) {
-    throw new BadRequestException('Giftcard image missing.');
-  }
-
-  // 1️⃣ Upload to Cloudinary
-  const imageUrl = await this.cloudinaryService.uploadImage(file.buffer)
+  const imageUrl = await this.cloudinaryService.uploadImage(file.path);
 
   return this.dataSource.transaction(async (manager) => {
-    const user = await manager.findOne(User, { where: { id: userId } });
-    if (!user) throw new NotFoundException('User not found');
+    const user = await manager.findOne(User, { where: { id: dto.userId } });
+    if (!user) throw new NotFoundException("User not found");
 
-    // 2️⃣ Credit wallet
-    user.balance = Number(user.balance ?? 0) + Number(amount);
-    await manager.save(user);
+    // DO NOT CREDIT USER YET ❌
+    // Only create a pending transaction
 
-    // 3️⃣ Save transaction
     const tx = manager.create(Transaction, {
       user,
-      type: 'deposit_giftcard',
-      amount: amount.toString(),
-      currency: 'USD',
+      type: "deposit_giftcard",
+      amount: dto.amount.toString(),
+      currency: "USD",
+      status: "pending",    // ⭐ show it's awaiting admin approval
       metadata: {
-        cardType,
-        note,
-        image: imageUrl,            // ⭐ Cloudinary URL stored here
+        cardType: dto.cardType,
+        note: dto.note,
+        image: imageUrl,
       },
     });
 
     await manager.save(tx);
 
-    // 4️⃣ Notify user
+    // Notify user deposit received
     await this.notificationsService.create(
       user,
-      'Giftcard Deposit Received',
-      `Your ${cardType} giftcard deposit of $${amount} is being processed.`
+      "Giftcard Submitted",
+      `Your ${dto.cardType} giftcard has been submitted and is pending review.`
     );
 
-    return { user, transaction: tx };
+    return { transaction: tx };
   });
+  } 
+
+  async getPendingGiftcards() {
+  return this.txRepo.find({
+    where: { type: 'deposit_giftcard', status: 'pending' },
+    relations: ['user'],
+    order: { createdAt: 'DESC' },
+    });
+  }
+
+  async approveGiftcard(id: number) {
+  return this.dataSource.transaction(async manager => {
+    const tx = await manager.findOne(Transaction, { where: { id }, relations: ["user"] });
+    if (!tx) throw new NotFoundException("Transaction not found");
+
+    if (tx.status !== "pending")
+      throw new BadRequestException("Already processed");
+
+    // Credit user NOW
+    tx.user.balance = Number(tx.user.balance) + Number(tx.amount);
+    await manager.save(tx.user);
+
+    tx.status = "approved";
+    await manager.save(tx);
+
+    await this.notificationsService.create(
+      tx.user,
+      "Giftcard Approved",
+      `Your giftcard deposit of $${tx.amount} has been approved and credited.`
+    );
+
+    return { success: true };
+  });
+  }
+
+  async rejectGiftcard(id: number) {
+  const tx = await this.txRepo.findOne({ where: { id }, relations: ["user"] });
+  if (!tx) throw new NotFoundException("Transaction not found");
+
+  if (tx.status !== "pending")
+    throw new BadRequestException("Already processed");
+
+  tx.status = "rejected";
+  await this.txRepo.save(tx);
+
+  await this.notificationsService.create(
+    tx.user,
+    "Giftcard Rejected",
+    "Your giftcard was rejected. Please upload a clearer image or try another card."
+  );
+
+  return { success: true };
   }
 }
