@@ -274,37 +274,38 @@ export class WalletService {
 async depositGiftcard(dto: DepositGiftcardDto, file: any) {
   if (!file) throw new BadRequestException("Giftcard image is required");
 
-    const imageUrl = await this.cloudinaryService.uploadImage(file);
+  // ⭐ FIX — send full file object (buffer), not file.path
+  const imageUrl = await this.cloudinaryService.uploadImage(file);
 
-    return this.dataSource.transaction(async (manager) => {
-      const user = await manager.findOne(User, { where: { id: dto.userId } });
-      if (!user) throw new NotFoundException("User not found");
+  return this.dataSource.transaction(async (manager) => {
+    const user = await manager.findOne(User, { where: { id: dto.userId } });
+    if (!user) throw new NotFoundException("User not found");
 
-      const tx = manager.create(Transaction, {
-        user,
-        type: "deposit_giftcard",
-        amount: dto.amount.toString(),
-        currency: "USD",
-        status: "pending",    // ⭐ show it's awaiting admin approval
-        metadata: {
-          cardType: dto.cardType,
-          note: dto.note,
-          image: imageUrl,
-        },
-      });
-
-      await manager.save(tx);
-
-      // Notify user deposit received
-      await this.notificationsService.create(
-        user,
-        "Giftcard Submitted",
-        `Your ${dto.cardType} giftcard has been submitted and is pending review.`
-      );
-
-      return { transaction: tx };
+    // DO NOT CREDIT USER — pending review
+    const tx = manager.create(Transaction, {
+      user,
+      type: "deposit_giftcard",
+      amount: dto.amount.toString(),
+      currency: "USD",
+      status: "pending",
+      metadata: {
+        cardType: dto.cardType,
+        note: dto.note,
+        image: imageUrl,
+      },
     });
-  }
+
+    await manager.save(tx);
+
+    await this.notificationsService.create(
+      user,
+      "Giftcard Submitted",
+      `Your ${dto.cardType} giftcard has been submitted and is pending review.`
+    );
+
+    return { transaction: tx };
+  });
+}
 
   async getPendingGiftcards() {
   return this.txRepo.find({
