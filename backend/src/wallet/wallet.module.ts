@@ -7,12 +7,14 @@ import { UsersModule } from '../users/users.module';
 import { Transaction } from '../transactions/transaction.entity';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Transaction]), // ✅ ONLY ENTITIES HERE
     UsersModule,
-    NotificationsModule, // ✅ MODULES GO OUTSIDE
+    NotificationsModule,
+    CloudinaryModule, // ✅ MODULES GO OUTSIDE
   ],
   controllers: [WalletController],
   providers: [WalletService, CloudinaryService],

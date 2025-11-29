@@ -274,14 +274,12 @@ export class WalletService {
 async depositGiftcard(dto: DepositGiftcardDto, file: any) {
   if (!file) throw new BadRequestException("Giftcard image is required");
 
-  // ⭐ FIX — send full file object (buffer), not file.path
-  const imageUrl = await this.cloudinaryService.uploadImage(file);
+  const imageUrl = await this.cloudinaryService.uploadImage(file.buffer);
 
   return this.dataSource.transaction(async (manager) => {
     const user = await manager.findOne(User, { where: { id: dto.userId } });
     if (!user) throw new NotFoundException("User not found");
 
-    // DO NOT CREDIT USER — pending review
     const tx = manager.create(Transaction, {
       user,
       type: "deposit_giftcard",

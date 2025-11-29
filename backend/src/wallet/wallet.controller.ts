@@ -44,7 +44,7 @@ export class WalletController {
 
   @Post('deposit-giftcard')
   @UseInterceptors(FileInterceptor('file', {
-      storage: multer.memoryStorage(),          // ⭐ Fixed
+      storage: multer.memoryStorage(),
     }))
   async depositGiftcard(
     @Body() dto: DepositGiftcardDto,
