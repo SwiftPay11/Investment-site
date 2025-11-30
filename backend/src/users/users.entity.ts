@@ -63,6 +63,15 @@ export class User {
   @Column({ nullable: true, default: "1:500" })
   leverage: string;
 
+  @Column({ nullable: true })
+  phone: string;
+
+  @Column({ nullable: true })
+  gender: string;
+
+  @Column({ nullable: true })
+  dob: string;
+
   @Column({ default: false })
   isAdmin: boolean;
 

@@ -31,18 +31,23 @@ export class AuthService {
   }
 
   // REGISTER
-  async register(country: string, email: string, password: string) {
+  async register(email: string, password: string, dto: any) {
     const existingUser = await this.usersService.findByEmail(email);
     if (existingUser) throw new BadRequestException('Email already in use');
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await this.usersService.create({
-      country,
       email,
       password: hashedPassword,
+      fullname: dto.fullname,
+      phone: dto.phone,
+      gender: dto.gender,
+      dob: dto.dob,
+      country: dto.country,
     });
 
+    await this.usersRepo.save(user);
     return { message: 'Registration successful', user };
   }
 
@@ -248,4 +253,18 @@ async adminLogin(email: string, password: string) {
   return { token: "admin-verified", adminId: admin.id };
 }
 
+async updateProfile(dto: any) {
+  const user = await this.usersRepo.findOne({ where: { email: dto.email } });
+
+  if (!user) throw new NotFoundException("User not found");
+
+  user.fullname = dto.fullname;
+  user.phone = dto.phone;
+  user.dob = dto.dob;
+  user.gender = dto.gender;   // optional
+  user.country = dto.country; // optional
+
+  await this.usersRepo.save(user);
+  return user;
+  }
 }

@@ -19,6 +19,12 @@ export class AuthController {
     const { email, password } = loginDto;
     return this.authService.login(email, password);
   }
+
+  @Post("update-profile")
+  async updateProfile(@Body() dto: any) {
+    return this.authService.updateProfile(dto);
+  }
+
 @Post("admin-login")
 async adminLogin(@Body() body) {
   const { email, password } = body;
