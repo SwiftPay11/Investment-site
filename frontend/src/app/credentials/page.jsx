@@ -20,12 +20,34 @@ export default function CredentialsPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // save details (e.g. to localStorage or API)
-    localStorage.setItem("userDetails", JSON.stringify(form));
-    router.push("/dashboard"); // redirect after save
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const fullName = `${form.firstName} ${form.lastName}`;
+
+  const payload = {
+    fullName,
+    dob: form.dob,
+    phone: form.phone,
+    // add gender + country if you later collect them
   };
+
+  try {
+    const res = await fetch("https://investment-site-x6tr.onrender.com/auth/update-profile", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const updatedUser = await res.json();
+
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+
+    router.push("/dashboard");
+  } catch (err) {
+    alert("Something went wrong!");
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0f2c] to-[#08142b] text-white flex flex-col md:flex-row items-center justify-center p-4">
