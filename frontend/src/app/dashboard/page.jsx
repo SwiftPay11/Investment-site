@@ -547,11 +547,12 @@ useEffect(() => {
                 <span onClick={() => router.push("/deposit")}> {t.deposit}</span>
               </button>
 
-              <div className="mt-2 text-sm text-white/80  cursor-pointer hover:bg-white/10 transition">
+              <div className="mt-2 text-sm text-white/80  cursor-pointer hover:bg-white/10 transition" onClick={() => router.push ("/deposit")}>
                 Deposit</div>
               <div className="mt-4">
-                <div className="text-sm text-white/80 mb-2  cursor-pointer hover:bg-white/10 transition">Tools</div>
-                <div className="text-xs text-white/70  cursor-pointer hover:bg-white/10 transition">Analytics & Education</div>
+                <div className="text-sm text-white/80 mb-2  cursor-pointer hover:bg-white/10 transition" onClick={() => router.push ("/settings")}>Settings</div>
+                <div className="text-xs text-white/70  cursor-pointer hover:bg-white/10 transition" onClick={() => router.push ("/transfer")}>Transfer to NexTrade Account</div>
+                <div className="text-xs text-white/70  cursor-pointer hover:bg-white/10 transition" onClick={() => router.push ("/transfer-other")}>Transfer to External Account</div>
               </div>
             </div>
 
