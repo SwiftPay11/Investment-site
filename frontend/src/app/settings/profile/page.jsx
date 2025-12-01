@@ -75,7 +75,7 @@ export default function ProfilePage() {
         </label>
 
         {/* First Name */}
-        <p className="text-xl font-semibold mt-4">{fullname}</p>
+        <p className="text-xl font-semibold mt-4">{firstName}</p>
 
         {/* Email */}
         <p className="text-gray-400 text-sm">{user.email}</p>
