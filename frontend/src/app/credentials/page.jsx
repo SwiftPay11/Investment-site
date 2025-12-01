@@ -23,13 +23,21 @@ export default function CredentialsPage() {
  const handleSubmit = async (e) => {
   e.preventDefault();
 
+  const storedUser = JSON.parse(localStorage.getItem("user")); 
+  if (!storedUser) {
+    alert("No user logged in");
+    return;
+  }
+
   const fullname = `${form.firstName} ${form.lastName}`;
 
   const payload = {
-    fullname,
+    email: storedUser.email,      // REQUIRED ⚠️
+    country: storedUser.country,  // REQUIRED ⚠️
+    fullname: fullname,
     dob: form.dob,
     phone: form.phone,
-    // add gender + country if you later collect them
+    gender: "Not specified",      // you can update later
   };
 
   try {
@@ -41,13 +49,16 @@ export default function CredentialsPage() {
 
     const updatedUser = await res.json();
 
+    // Save updated user to localStorage
     localStorage.setItem("user", JSON.stringify(updatedUser));
 
     router.push("/dashboard");
   } catch (err) {
+    console.error(err);
     alert("Something went wrong!");
   }
 };
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0a0f2c] to-[#08142b] text-white flex flex-col md:flex-row items-center justify-center p-4">
