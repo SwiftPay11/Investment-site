@@ -23,10 +23,10 @@ export default function CredentialsPage() {
  const handleSubmit = async (e) => {
   e.preventDefault();
 
-  const fullName = `${form.firstName} ${form.lastName}`;
+  const fullname = `${form.firstName} ${form.lastName}`;
 
   const payload = {
-    fullName,
+    fullname,
     dob: form.dob,
     phone: form.phone,
     // add gender + country if you later collect them
