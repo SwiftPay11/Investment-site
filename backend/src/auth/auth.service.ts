@@ -15,41 +15,46 @@ import { Resend } from 'resend';
 
 @Injectable()
 export class AuthService {
-  private resend: Resend; // ← Add this line
+  private resend: Resend;
 
   constructor(
     private readonly notificationsService: NotificationsService,
-
     @InjectRepository(User)
-    private readonly usersRepo: Repository<User>, // ✔ FIXED
-
+    private readonly usersRepo: Repository<User>,
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
   ) {
-    // ← Initialize Resend here
     this.resend = new Resend(process.env.RESEND_API_KEY);
   }
 
-  // REGISTER
-  async register(email: string, password: string, dto: any) {
-    const existingUser = await this.usersService.findByEmail(email);
-    if (existingUser) throw new BadRequestException('Email already in use');
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await this.usersService.create({
-      email,
-      password: hashedPassword,
-      fullname: dto.fullname,
-      phone: dto.phone,
-      gender: dto.gender,
-      dob: dto.dob,
-      country: dto.country,
-    });
-
-    await this.usersRepo.save(user);
-    return { message: 'Registration successful', user };
+ // REGISTER
+async register(dto: any) {
+  // 1. Check if email already exists
+  const existingUser = await this.usersService.findByEmail(dto.email);
+  if (existingUser) {
+    throw new BadRequestException("Email already in use");
   }
+
+  // 2. Hash password
+  const hashedPassword = await bcrypt.hash(dto.password, 10);
+
+  // 3. Manually create a new User instance (NO create() call)
+  const user = new User();
+  user.email = dto.email;
+  user.password = hashedPassword;
+  user.country = dto.country;
+  user.fullname = ""; // will be filled from credentials later
+  user.phone = "";
+  user.gender = "";
+  user.dob = "";
+
+  // 4. Save user
+  const saved = await this.usersRepo.save(user);
+
+  // 5. Return full user object to frontend
+  return saved;
+}
+
 
   // LOGIN
   async login(email: string, password: string) {

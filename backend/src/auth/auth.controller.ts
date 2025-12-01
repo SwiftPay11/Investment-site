@@ -10,8 +10,7 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() registerDto: RegisterDto) {
-    const { country, email, password } = registerDto;
-    return this.authService.register(country, email, password);
+    return this.authService.register(registerDto);
   }
 
   @Post('login')
