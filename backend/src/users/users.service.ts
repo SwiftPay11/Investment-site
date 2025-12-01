@@ -147,7 +147,7 @@ if (!isFakeRecipient) {
           <td style="padding:30px;">
             <h2 style="margin:0 0 10px;font-size:20px;color:#0d243a;">Debit Alert</h2>
             <p style="margin:0 0 20px;font-size:14px;line-height:1.6;">
-              Dear Valued <strong>${sender.email || 'User'}</strong>,<br/><br/>
+              Dear Valued <strong>${sender.fullname || 'User'}</strong>,<br/><br/>
               Your account has been <strong>debited</strong> with <span style="color:green;font-size:18px;"> $${Number(amount || 0).toFixed(2)}</span> on ${new Date().toLocaleString()}.
             </p>
             <table width="100%" cellpadding="5" cellspacing="0" style="margin:20px 0;border:1px solid #e0e0e0;">
