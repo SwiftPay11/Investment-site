@@ -37,7 +37,7 @@ export default function ProfilePage() {
 
   if (!user) return null;
 
-  const firstName = user.fullName?.split(" ")[0] || "User";
+  const fullname = user.fullname?.split(" ")[0] || "User";
 
   return (
     <div className="min-h-screen bg-[#0d0f1a] text-white p-5">
@@ -75,7 +75,7 @@ export default function ProfilePage() {
         </label>
 
         {/* First Name */}
-        <p className="text-xl font-semibold mt-4">{firstName}</p>
+        <p className="text-xl font-semibold mt-4">{fullname}</p>
 
         {/* Email */}
         <p className="text-gray-400 text-sm">{user.email}</p>
