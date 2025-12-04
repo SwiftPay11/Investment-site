@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FiCamera } from "react-icons/fi";
+import { FiChevronRight } from "react-icons/fi";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -113,15 +114,17 @@ export default function ProfilePage() {
       </div>
 
       {/* ACCOUNT TIER (clickable) */}
-      <div
-        className="bg-[#141726] rounded-xl border border-[#1e2237] p-5 mb-8 cursor-pointer hover:bg-[#191d2e]"
-        onClick={() => router.push("/account-tier")} // ⭐ CLICK NAVIGATION
-      >
-        <p className="text-gray-400 text-sm">Account Tier</p>
-        <p className="text-lg font-medium mt-1">
-          {user.tier || "Tier 1"}
-        </p>
-      </div>
+     <div
+  className="bg-[#141726] rounded-xl border border-[#1e2237] p-5 mb-8 cursor-pointer hover:bg-[#191d2e] flex justify-between items-center"
+  onClick={() => router.push("/account-tier")}
+>
+  <div>
+    <p className="text-gray-400 text-sm">Account Tier</p>
+    <p className="text-lg font-medium mt-1">{user.tier || "Tier 1"}</p>
+  </div>
+
+  <FiChevronRight className="text-gray-400 text-2xl" />
+</div>
 
     </div>
   );
