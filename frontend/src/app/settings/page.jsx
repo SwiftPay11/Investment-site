@@ -84,8 +84,9 @@ export default function SettingsPage() {
       {/* SIGN OUT BUTTON */}
       <button
         onClick={handleSignOut}
-        className="w-full bg-blue-600 mt-auto py-3 rounded-xl font-semibold text-white shadow-lg shadow-red-900/40"
-      >
+        className="w-full bg-blue-600 mt-auto py-3 rounded-xl font-semibold text-white shadow-lg shadow-red-900/40" 
+        onClick={() => router.push("/login")}
+        >
         Sign Out
       </button>
     </div>
