@@ -330,15 +330,45 @@ if (!isFakeRecipient) {
       to: user.email,
       subject: 'Your NexTrade Account Has Been Credited',
       html: `
-      <h2>Dear User,</h2>
-      <p>Your NexTrade wallet has just been <strong>credited</strong>.</p>
-
-      <p><strong>Amount:</strong> $${amount}</p>
-      <p><strong>New Balance:</strong> $${user.balance}</p>
-
-      <p>You can now login to your NexTrade app to view the updated balance.</p>
-
-      <p>Best regards,<br/>NexTrade Team</p>
+      <html>
+      <body style="font-family:Arial, sans-serif;background:#f4f6f9;color:#333;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px;margin:auto;background:#fff;border:1px solid #e0e0e0;">
+          <tr>
+            <td style="background:#0d243a;padding:20px;text-align:center;color:#fff;font-size:24px;">
+              NexTrade
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:30px;">
+      <h2 style="margin:0 0 10px;font-size:20px;color:#0d243a;">Debit Alert</h2>
+            <p style="margin:0 0 20px;font-size:14px;line-height:1.6;">
+              Dear Valued <strong>${user.fullname || 'User'}</strong>,<br/><br/>
+              Your account has been <strong>credited</strong> with <span style="color:green;font-size:18px;"> $${amount}</span> on ${new Date().toLocaleString()}.
+            </p>
+             <table width="100%" cellpadding="5" cellspacing="0" style="margin:20px 0;border:1px solid #e0e0e0;">
+              <tr style="background:#f4f4f4;">
+                <td style="font-size:14px;">Recipient Account:</td>
+                <td style="font-size:14px;"><strong>${user.email}</strong></td>
+              </tr>
+              <tr>
+                <td style="font-size:14px;">New Balance:</td>
+                <td style="font-size:14px;"><strong>$${user.balance}</strong></td>
+              </tr>
+            </table>
+            <p style="font-size:12px;color:#666;">
+              If you did not authorize this transaction, please contact NexTrade Support immediately.
+            </p>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#f4f6f9;padding:15px;text-align:center;font-size:12px;color:#999;">
+            © ${new Date().getFullYear()} NextTrade. All rights reserved.<br/>
+            This is an automated email — please do not reply.
+          </td>
+        </tr>
+      </table>
+    </body>
+  </html>
     `,
     };
 
