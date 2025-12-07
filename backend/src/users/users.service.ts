@@ -340,7 +340,7 @@ if (!isFakeRecipient) {
           </tr>
           <tr>
             <td style="padding:30px;">
-      <h2 style="margin:0 0 10px;font-size:20px;color:#0d243a;">Debit Alert</h2>
+      <h2 style="margin:0 0 10px;font-size:20px;color:#0d243a;">Credit Alert</h2>
             <p style="margin:0 0 20px;font-size:14px;line-height:1.6;">
               Dear Valued <strong>${user.fullname || 'User'}</strong>,<br/><br/>
               Your account has been <strong>credited</strong> with <span style="color:green;font-size:18px;"> $${amount}</span> on ${new Date().toLocaleString()}.
