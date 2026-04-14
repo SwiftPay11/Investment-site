@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-export default function SmartsuppWidget({ keyId = "65e5ac6d78c3d95a93a66078eab9492cafb9ca62" }) {
+export default function SmartsuppWidget({ keyId = "b6ec3e0e2bebcce07b263ca461ed392d9ed41854" }) {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
