@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect } from "react";
 
 export default function SmartsuppWidget({
@@ -9,30 +11,19 @@ export default function SmartsuppWidget({
     if (typeof window === "undefined") return;
 
     // prevent double load
-    if ((window as any).smartsupp) return;
+    if ((window as any).smartsuppLoaded) return;
+    (window as any).smartsuppLoaded = true;
 
-    // EXACT equivalent of official script
     (window as any)._smartsupp = (window as any)._smartsupp || {};
     (window as any)._smartsupp.key = keyId;
 
-    (window as any).smartsupp = function (...args: any[]) {
-      ((window as any).smartsupp._ = (window as any).smartsupp._ || []).push(args);
-    };
-    (window as any).smartsupp._ = [];
+    const script = document.createElement("script");
+    script.type = "text/javascript";
+    script.charset = "utf-8";
+    script.async = true;
+    script.src = "https://www.smartsuppchat.com/loader.js?";
 
-    const s = document.getElementsByTagName("script")[0];
-    const c = document.createElement("script");
-
-    c.type = "text/javascript";
-    c.charset = "utf-8";
-    c.async = true;
-    c.src = "https://www.smartsuppchat.com/loader.js?";
-
-    if (s?.parentNode) {
-      s.parentNode.insertBefore(c, s);
-    } else {
-      document.head.appendChild(c);
-    }
+    document.body.appendChild(script);
   }, [keyId]);
 
   return null;
