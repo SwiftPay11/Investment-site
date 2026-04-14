@@ -8,33 +8,31 @@ export default function SmartsuppWidget({
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Prevent loading multiple times
+    // prevent double load
     if ((window as any).smartsupp) return;
 
+    // EXACT equivalent of official script
     (window as any)._smartsupp = (window as any)._smartsupp || {};
     (window as any)._smartsupp.key = keyId;
 
-    (function (d: Document) {
-      const s = d.createElement("script");
-      s.type = "text/javascript";
-      s.charset = "utf-8";
-      s.async = true;
-      s.src = "https://www.smartsuppchat.com/loader.js?";
+    (window as any).smartsupp = function (...args: any[]) {
+      ((window as any).smartsupp._ = (window as any).smartsupp._ || []).push(args);
+    };
+    (window as any).smartsupp._ = [];
 
-      const c = d.getElementsByTagName("script")[0] as
-        | HTMLScriptElement
-        | undefined;
+    const s = document.getElementsByTagName("script")[0];
+    const c = document.createElement("script");
 
-      const parent = c?.parentNode;
+    c.type = "text/javascript";
+    c.charset = "utf-8";
+    c.async = true;
+    c.src = "https://www.smartsuppchat.com/loader.js?";
 
-      if (parent) {
-        parent.insertBefore(s, c);
-      } else if (d.head) {
-        d.head.appendChild(s);
-      } else {
-        d.body.appendChild(s);
-      }
-    })(document);
+    if (s?.parentNode) {
+      s.parentNode.insertBefore(c, s);
+    } else {
+      document.head.appendChild(c);
+    }
   }, [keyId]);
 
   return null;
