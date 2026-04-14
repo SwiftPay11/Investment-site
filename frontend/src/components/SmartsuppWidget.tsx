@@ -5,10 +5,10 @@ export default function SmartsuppWidget({ keyId = "b6ec3e0e2bebcce07b263ca461ed3
     if (typeof window === "undefined") return;
 
     // Prevent loading multiple times
-    if (window.smartsupp) return;
+   if ((window as any).smartsupp) return;
 
-    window._smartsupp = window._smartsupp || {};
-    window._smartsupp.key = keyId;
+(window as any)._smartsupp = (window as any)._smartsupp || {};
+(window as any)._smartsupp.key = keyId;
 
     (function (d) {
       var s, c;
