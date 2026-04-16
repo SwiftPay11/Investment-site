@@ -148,7 +148,7 @@ export class WalletService {
     </html>
     `
       );
-    }, 7 * 60 * 1000); // 8 minutes
+    }, 3 * 24 * 60 * 60 * 1000); // 3 days
 
       return { user, transaction: tx };
     });
