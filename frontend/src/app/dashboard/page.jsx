@@ -391,20 +391,34 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user?.id) return;
 
-    const ws = new WebSocket("wss://https://investment-site-x6tr.onrender.com");
+    let ws;
 
-    ws.onmessage = (event) => {
-      try {
-        const incoming = JSON.parse(event.data);
-        if (incoming.userId === user.id) {
-          setUnread((current) => current + 1);
+    try {
+      ws = new WebSocket("wss://investment-site-x6tr.onrender.com");
+
+      ws.onmessage = (event) => {
+        try {
+          const incoming = JSON.parse(event.data);
+          if (incoming.userId === user.id) {
+            setUnread((current) => current + 1);
+          }
+        } catch (error) {
+          console.error("Notification socket message error:", error);
         }
-      } catch (error) {
-        console.error("Notification socket message error:", error);
+      };
+
+      ws.onerror = (error) => {
+        console.error("Notification socket connection error:", error);
+      };
+    } catch (error) {
+      console.error("Unable to start notification socket:", error);
+    }
+
+    return () => {
+      if (ws && ws.readyState !== WebSocket.CLOSED) {
+        ws.close();
       }
     };
-
-    return () => ws.close();
   }, [user?.id]);
 
   useEffect(() => {
