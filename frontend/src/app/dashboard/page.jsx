@@ -1,15 +1,31 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import {
+  FiActivity,
+  FiArrowDownLeft,
+  FiArrowRight,
+  FiArrowUpRight,
   FiChevronDown,
   FiBell,
+  FiCheckCircle,
+  FiCreditCard,
   FiRefreshCw,
+  FiGrid,
+  FiHelpCircle,
   FiMenu,
+  FiPlus,
+  FiRepeat,
+  FiSettings,
+  FiShield,
+  FiSmartphone,
+  FiTrendingUp,
+  FiUser,
   FiX,
-  FiDownload,
 } from "react-icons/fi";
 import { useRouter } from "next/navigation";
+import styles from "./dashboard.module.css";
 
 /**
  * Crypto FX Dashboard page
@@ -290,25 +306,11 @@ const LANG_OPTIONS = [
 ];
 
 export default function Dashboard() {
+  const router = useRouter();
   const [tradingAccounts, setTradingAccounts] = useState([]);
-   const [unread, setUnread] = useState(0);
+  const [unread, setUnread] = useState(0);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();   
-const user = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("user")) : null;
-
-  const loadUnread = async () => {
-  if (!user?.id) return;
-
-  const res = await fetch(`https://investment-site-x6tr.onrender.com/notifications/unread-count/${user.id}`);
-  const count = await res.json();
-  setUnread(count);
-};
-
-
-
-
-  // ui state
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [lang, setLang] = useState(
@@ -316,6 +318,18 @@ const user = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("us
       ? localStorage.getItem("cryptofx_lang") || "en"
       : "en"
   );
+  const langMenuRef = useRef(null);
+
+  const user = useMemo(() => {
+    if (typeof window === "undefined") return null;
+
+    try {
+      return JSON.parse(localStorage.getItem("user") || "null");
+    } catch {
+      return null;
+    }
+  }, []);
+
   const t = useMemo(() => TRANSLATIONS[lang] || TRANSLATIONS.en, [lang]);
 
   useEffect(() => {
@@ -323,71 +337,98 @@ const user = typeof window !== "undefined" ? JSON.parse(localStorage.getItem("us
   }, [lang]);
 
   useEffect(() => {
-  if (!user?.id) return;
-  loadUnread();
-  const interval = setInterval(() => loadUnread(), 5000);
-  return () => clearInterval(interval);
-}, [user]);
+    if (!user?.id) return;
+
+    let active = true;
+
+    const loadUnread = async () => {
+      try {
+        const res = await fetch(
+          `https://investment-site-x6tr.onrender.com/notifications/unread-count/${user.id}`
+        );
+        const count = await res.json();
+        if (active) setUnread(count);
+      } catch (error) {
+        console.error("Unread notifications fetch error:", error);
+      }
+    };
+
+    loadUnread();
+    const interval = setInterval(loadUnread, 5000);
+
+    return () => {
+      active = false;
+      clearInterval(interval);
+    };
+  }, [user?.id]);
 
   useEffect(() => {
-  const handleClickOutside = (e) => {
-    if (!e.target.closest(".lang-dropdown")) {
-      setLangDropdownOpen(false);
-    }
-  };
-  document.addEventListener("click", handleClickOutside);
-  return () => document.removeEventListener("click", handleClickOutside);
-}, []);
+    const handlePointerDown = (event) => {
+      if (
+        langMenuRef.current &&
+        !langMenuRef.current.contains(event.target)
+      ) {
+        setLangDropdownOpen(false);
+      }
+    };
 
-useEffect(() => {
-  if (!user?.id) return;
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setLangDropdownOpen(false);
+        setSidebarOpen(false);
+      }
+    };
 
-  const ws = new WebSocket("wss://https://investment-site-x6tr.onrender.com");
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
 
-  ws.onmessage = (event) => {
-    const incoming = JSON.parse(event.data);
-    if (incoming.userId === user.id) {
-      // new notification arrived → increment
-      setUnread((u) => u + 1);
-    }
-  };
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
-  return () => ws.close();
-}, [user]);
+  useEffect(() => {
+    if (!user?.id) return;
 
-useEffect(() => {
-  const handler = () => setUnread((u) => Math.max(0, u - 1));
-  window.addEventListener("notif-read", handler);
-  return () => window.removeEventListener("notif-read", handler);
-}, []);
+    const ws = new WebSocket("wss://https://investment-site-x6tr.onrender.com");
 
-// Load trading accounts ONLY after user loads
-useEffect(() => {
-  if (!user?.id) return;
+    ws.onmessage = (event) => {
+      try {
+        const incoming = JSON.parse(event.data);
+        if (incoming.userId === user.id) {
+          setUnread((current) => current + 1);
+        }
+      } catch (error) {
+        console.error("Notification socket message error:", error);
+      }
+    };
 
-  fetch(`https://investment-site-x6tr.onrender.com/trading-accounts/user/${user.id}`)
-    .then((res) => res.json())
-    .then((accounts) => setTradingAccounts(accounts))
-    .catch((err) =>
-      console.error("Trading accounts fetch error:", err)
-    );
-}, [user]);
+    return () => ws.close();
+  }, [user?.id]);
+
+  useEffect(() => {
+    const handler = () => setUnread((current) => Math.max(0, current - 1));
+    window.addEventListener("notif-read", handler);
+    return () => window.removeEventListener("notif-read", handler);
+  }, []);
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    fetch(
+      `https://investment-site-x6tr.onrender.com/trading-accounts/user/${user.id}`
+    )
+      .then((res) => res.json())
+      .then((accounts) =>
+        setTradingAccounts(Array.isArray(accounts) ? accounts : [])
+      )
+      .catch((err) => console.error("Trading accounts fetch error:", err));
+  }, [user?.id]);
 
 
   useEffect(() => {
-    // get logged-in user email from localStorage (same approach you used earlier)
-    const stored = localStorage.getItem("user");
-    if (!stored) {
-      setLoading(false);
-      return;
-    }
-    let userObj = {};
-    try {
-      userObj = JSON.parse(stored);
-    } catch {
-      userObj = {};
-    }
-    const email = userObj?.email;
+    const email = user?.email;
     if (!email) {
       setLoading(false);
       return;
@@ -420,28 +461,46 @@ useEffect(() => {
         console.error("Dashboard fetch err", err);
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [user?.email]);
 
-  
-  // defensive format helpers
   const formatMoney = (v) => {
     const n = Number(v ?? 0);
     if (Number.isNaN(n)) return "0.00";
-    return n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return n.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
+
+  const navigate = (path) => {
+    setSidebarOpen(false);
+    router.push(path);
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#020817] via-[#060b1e] to-[#0a0f29] text-white">
-        <div className="text-gray-300">Loading dashboard...</div>
+      <div className={styles.stateScreen}>
+        <div className={styles.loadingMark} aria-hidden="true">
+          <FiTrendingUp />
+        </div>
+        <FiRefreshCw className={styles.spinner} aria-hidden="true" />
+        <p>Preparing your dashboard…</p>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#020817] via-[#060b1e] to-[#0a0f29] text-white">
-        <div className="text-gray-300">No dashboard data found.</div>
+      <div className={styles.stateScreen}>
+        <div className={styles.emptyStateIcon}>
+          <FiActivity aria-hidden="true" />
+        </div>
+        <h1>Dashboard unavailable</h1>
+        <p>We couldn’t load your account information right now.</p>
+        <button type="button" onClick={() => window.location.reload()}>
+          <FiRefreshCw aria-hidden="true" />
+          Try again
+        </button>
       </div>
     );
   }
@@ -449,320 +508,506 @@ useEffect(() => {
   const walletId = data.walletId ?? data.id ?? "W000000USD";
   const name =
     data.name ?? data.fullName ?? (data.email ? data.email.split("@")[0] : "Trader");
+  const firstName = String(name).trim().split(" ")[0] || "Trader";
+  const totalTradingBalance = tradingAccounts.reduce(
+    (sum, account) => sum + Number(account.accountBalance ?? 0),
+    0
+  );
+  const totalFreeMargin = tradingAccounts.reduce(
+    (sum, account) => sum + Number(account.freeMargin ?? 0),
+    0
+  );
+  const activeAccounts = tradingAccounts.filter(
+    (account) => account.activated
+  ).length;
+
+  const primaryNavigation = [
+    { label: "Overview", icon: FiGrid, current: true },
+    { label: t.deposit, icon: FiArrowDownLeft, path: "/deposit" },
+    { label: "Transactions", icon: FiCreditCard, path: "/transactions" },
+    { label: t.withdraw, icon: FiArrowUpRight, path: "/withdraw" },
+  ];
+
+  const accountNavigation = [
+    { label: t.transfer, icon: FiRepeat, path: "/transfer" },
+    { label: "External transfer", icon: FiArrowUpRight, path: "/transfer-other" },
+    { label: "Settings", icon: FiSettings, path: "/settings" },
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#020817] via-[#060b1e] to-[#0a0f29] text-white">
-      {/* page container */}
-      <div className="max-w-[1200px] mx-auto">
-        {/* header */}
-        <header className="flex items-center justify-between px-4 py-4">
-          <div className="flex items-center gap-4">
+    <div
+      className={styles.dashboardShell}
+      dir={lang === "ar" ? "rtl" : "ltr"}
+    >
+      <div className={styles.ambientGlow} aria-hidden="true" />
+
+      <header className={styles.topbar}>
+        <div className={styles.topbarInner}>
+          <div className={styles.brandArea}>
             <button
-              className="md:hidden p-2 rounded bg-white/5"
+              type="button"
+              className={styles.menuButton}
               onClick={() => setSidebarOpen(true)}
-              aria-label="open sidebar"
+              aria-label="Open navigation"
             >
-              <FiMenu />
+              <FiMenu aria-hidden="true" />
             </button>
-            <div className="text-2xl font-bold text-red-500 tracking-wide">NexTrade</div>
+
+            <div className={styles.brand} aria-label="NexTrade">
+              <span className={styles.brandIcon}>
+                <FiTrendingUp aria-hidden="true" />
+              </span>
+              <span>Nex<span>Trade</span></span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            {/* language selector */}
-           <div className="relative lang-dropdown">
-  <button
-    className="flex items-center gap-2 px-3 py-2 bg-white/6 rounded"
-    onClick={() => setLangDropdownOpen((prev) => !prev)}
-    title={t.languageLabel}
-  >
-    <span className="text-sm">{LANG_OPTIONS.find((l) => l.code === lang)?.flag}</span>
-    <span className="text-sm">{LANG_OPTIONS.find((l) => l.code === lang)?.label}</span>
-    <FiChevronDown
-      className={`transition-transform ${langDropdownOpen ? "rotate-180" : ""}`}
-    />
-  </button>
+          <div className={styles.headerActions}>
+            <div className={styles.languageMenu} ref={langMenuRef}>
+              <button
+                type="button"
+                className={styles.languageButton}
+                onClick={() => setLangDropdownOpen((current) => !current)}
+                title={t.languageLabel}
+                aria-haspopup="menu"
+                aria-expanded={langDropdownOpen}
+              >
+                <span aria-hidden="true">
+                  {LANG_OPTIONS.find((option) => option.code === lang)?.flag}
+                </span>
+                <span className={styles.languageName}>
+                  {LANG_OPTIONS.find((option) => option.code === lang)?.label}
+                </span>
+                <FiChevronDown
+                  className={langDropdownOpen ? styles.chevronOpen : ""}
+                  aria-hidden="true"
+                />
+              </button>
 
-  {langDropdownOpen && (
-    <div
-      className="absolute right-0 mt-2 w-44 bg-[#061025] border border-white/6 rounded shadow-lg z-20"
-    >
-      {LANG_OPTIONS.map((opt) => (
-        <div
-          key={opt.code}
-          onClick={() => {
-            setLang(opt.code);
-            setLangDropdownOpen(false);
-          }}
-          className="px-3 py-2 hover:bg-white/5 cursor-pointer flex items-center gap-2"
-        >
-          <span>{opt.flag}</span>
-          <span className="text-sm">{opt.label}</span>
-        </div>
-      ))}
-    </div>
-  )}
-</div>
+              {langDropdownOpen && (
+                <div className={styles.languageDropdown} role="menu">
+                  <div className={styles.dropdownLabel}>{t.languageLabel}</div>
+                  {LANG_OPTIONS.map((option) => (
+                    <button
+                      type="button"
+                      key={option.code}
+                      role="menuitemradio"
+                      aria-checked={option.code === lang}
+                      className={option.code === lang ? styles.languageActive : ""}
+                      onClick={() => {
+                        setLang(option.code);
+                        setLangDropdownOpen(false);
+                      }}
+                    >
+                      <span aria-hidden="true">{option.flag}</span>
+                      <span>{option.label}</span>
+                      {option.code === lang && <FiCheckCircle aria-hidden="true" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
-           <button
-  className="p-2 rounded bg-white/5 cursor-pointer hover:bg-white/10 transition"
-  title={t.notifications}
->
-  <div
-    className="relative cursor-pointer"
-    onClick={() => router.push("/notifications")}
-  >
-    {/* 🔔 Replace emoji with FiBell */}
-    <FiBell className="text-3xl" />
+            <button
+              type="button"
+              className={styles.notificationButton}
+              onClick={() => navigate("/notifications")}
+              title={t.notifications}
+              aria-label={`${t.notifications}${unread > 0 ? `, ${unread} unread` : ""}`}
+            >
+              <FiBell aria-hidden="true" />
+              {unread > 0 && (
+                <span className={styles.notificationBadge}>
+                  {unread > 99 ? "99+" : unread}
+                </span>
+              )}
+            </button>
 
-    {/* Unread badge */}
-    {unread > 0 && (
-      <span className="absolute -top-1 -right-1 bg-red-600 text-xs px-1.5 py-0.5 rounded-full">
-        {unread}
-      </span>
-    )}
-  </div>
-</button>
-
-
-            <div className="flex items-center gap-2 px-3 py-1 rounded bg-white/6">
-              <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-sm font-semibold">
+            <div className={styles.profileSummary}>
+              <div className={styles.avatar}>
                 {name?.[0]?.toUpperCase() ?? "U"}
               </div>
-              <div className="text-sm  cursor-pointer hover:bg-white/10 transition">
-                <div className="font-medium">{name}</div>
-                <div className="text-xs text-white/70">{data.email}</div>
+              <div className={styles.profileText}>
+                <strong>{name}</strong>
+                <span>{data.email}</span>
               </div>
             </div>
           </div>
-        </header>
+        </div>
+      </header>
 
-      <div className="flex flex-col md:flex-row gap-6 px-4 pb-12 overflow-x-hidden">
-          {/* left sidebar (desktop) */}
-          <aside className="hidden md:block w-72 bg-white/3 rounded-lg p-4 border border-white/6 min-h-[70vh]">
-            <div className="mb-4">
-              <div className="text-left mb-2 text-white font-semibold">Wallet & Accounts</div>
-              <button className="w-full text-left px-3 py-2 rounded bg-white/6 hover:bg-white/8 mb-2 flex items-center gap-3">
-                <span 
-                onClick={() => router.push("/deposit")} className="w-8 h-8 rounded bg-white/8 flex items-center justify-center">F</span>
-                <span onClick={() => router.push("/deposit")}> {t.deposit}</span>
-              </button>
+      <div className={styles.appLayout}>
+        <aside className={styles.sidebar}>
+          <div className={styles.sidebarContent}>
+            <nav className={styles.navigation} aria-label="Main navigation">
+              <p className={styles.navLabel}>Workspace</p>
+              {primaryNavigation.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    type="button"
+                    key={item.label}
+                    className={item.current ? styles.navItemActive : styles.navItem}
+                    onClick={() => item.path && navigate(item.path)}
+                    aria-current={item.current ? "page" : undefined}
+                  >
+                    <Icon aria-hidden="true" />
+                    <span>{item.label}</span>
+                    {!item.current && <FiChevronDown className={styles.navArrow} aria-hidden="true" />}
+                  </button>
+                );
+              })}
 
-              <div className="mt-2 text-sm text-white/80  cursor-pointer hover:bg-white/10 transition" onClick={() => router.push ("/deposit")}>
-                Deposit</div>
-              <div className="mt-4">
-                <div className="text-sm text-white/80 mb-2  cursor-pointer hover:bg-white/10 transition" onClick={() => router.push ("/settings")}>Settings</div>
-                <div className="text-xs text-white/70  cursor-pointer hover:bg-white/10 transition" onClick={() => router.push ("/transfer")}>Transfer to NexTrade Account</div>
-                <div className="text-xs text-white/70  cursor-pointer hover:bg-white/10 transition" onClick={() => router.push ("/transfer-other")}>Transfer to External Account</div>
+              <p className={styles.navLabel}>Account</p>
+              {accountNavigation.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    type="button"
+                    key={item.label}
+                    className={styles.navItem}
+                    onClick={() => navigate(item.path)}
+                  >
+                    <Icon aria-hidden="true" />
+                    <span>{item.label}</span>
+                    <FiChevronDown className={styles.navArrow} aria-hidden="true" />
+                  </button>
+                );
+              })}
+            </nav>
+
+            <div className={styles.sidebarDownload}>
+              <div className={styles.downloadIcon}>
+                <FiSmartphone aria-hidden="true" />
+              </div>
+              <p>Trade wherever you are</p>
+              <span>{t.downloadApp}</span>
+              <div className={styles.storeButtons}>
+                <button type="button">App Store</button>
+                <button type="button">Google Play</button>
               </div>
             </div>
 
-            <div className="mt-6">
-              <div className="text-sm text-white/70 mb-2">Download the app</div>
-              <div className="flex gap-2">
-                <button className="flex items-center gap-2 px-3 py-2 rounded bg-white/6">
-                  <FiDownload /> <span className="text-xs">App Store</span>
-                </button>
-                <button className="flex items-center gap-2 px-3 py-2 rounded bg-white/6">
-                  <FiDownload /> <span className="text-xs">Google Play</span>
-                </button>
-              </div>
-
-              <div className="mt-4 bg-white/6 p-3 rounded">
-                <div className="text-xs text-black/70">{t.downloadApp}</div>
-                <div className="mt-3 bg-white w-full h-32" />
-              </div>
-            </div>
-          </aside>
-
-          {/* main content column */}
-          <main className="flex-1">
-            {/* fund banner */}
-            <div className="bg-white/6 rounded-xl p-6 flex items-center justify-between border border-white/6 shadow-sm mb-6">
+            <div className={styles.securityNote}>
+              <FiShield aria-hidden="true" />
               <div>
-                <h2 className="text-lg font-semibold">{t.fundBannerTitle}</h2>
-                <p className="text-sm text-white/80 mt-1">{t.fundBannerSub}</p>
-              </div>
-              <div>
-                <button 
-                onClick={() => router.push("/deposit")}
-                className="bg-gradient-to-r from-blue-500 to-indigo-500 px-6 py-2 rounded-lg text-black font-semibold  cursor-pointer hover:bg-white/10 transition">
-                  {t.fund}
-                </button>
+                <strong>Secure session</strong>
+                <span>Your account is protected</span>
               </div>
             </div>
+          </div>
+        </aside>
 
-            {/* wallet card */}
-            <section className="bg-white/5 rounded-xl p-6 border border-white/6 mb-6">
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <h3 className="text-xl font-semibold">{t.yourWallet}</h3>
-                <a onClick={() => router.push("/transactions")} className="text-sm text-white/80  cursor-pointer hover:bg-white/10 transition">{t.transactionHistory}</a>
+        <main className={styles.mainContent}>
+          <div className={styles.pageHeading}>
+            <div>
+              <span className={styles.eyebrow}>Dashboard overview</span>
+              <h1>Welcome back, {firstName}</h1>
+              <p>Here’s a clear view of your wallet and trading activity.</p>
+            </div>
+            <button
+              type="button"
+              className={styles.primaryButton}
+              onClick={() => navigate("/deposit")}
+            >
+              <FiPlus aria-hidden="true" />
+              {t.fund}
+            </button>
+          </div>
+
+          <section className={styles.fundingBanner}>
+            <div className={styles.bannerIcon}>
+              <FiTrendingUp aria-hidden="true" />
+            </div>
+            <div className={styles.bannerCopy}>
+              <span>Get started</span>
+              <h2>{t.fundBannerTitle}</h2>
+              <p>{t.fundBannerSub}</p>
+            </div>
+            <button type="button" onClick={() => navigate("/deposit")}>
+              {t.fundYourWallet}
+            </button>
+          </section>
+
+          <section className={styles.metricsGrid} aria-label="Account summary">
+            <article className={styles.metricCard}>
+              <div className={`${styles.metricIcon} ${styles.metricIconBlue}`}>
+              <FiCreditCard aria-hidden="true" />
+              </div>
+              <div>
+                <span>{t.walletBalanceLabel}</span>
+                <strong>${formatMoney(data.balance)}</strong>
+                <small>Available balance</small>
+              </div>
+            </article>
+
+            <article className={styles.metricCard}>
+              <div className={`${styles.metricIcon} ${styles.metricIconPurple}`}>
+                <FiActivity aria-hidden="true" />
+              </div>
+              <div>
+                <span>Trading balance</span>
+                <strong>${formatMoney(totalTradingBalance)}</strong>
+                <small>Across all accounts</small>
+              </div>
+            </article>
+
+            <article className={styles.metricCard}>
+              <div className={`${styles.metricIcon} ${styles.metricIconGreen}`}>
+                <FiCheckCircle aria-hidden="true" />
+              </div>
+              <div>
+                <span>Active accounts</span>
+                <strong>{activeAccounts}</strong>
+                <small>{tradingAccounts.length} total accounts</small>
+              </div>
+            </article>
+
+            <article className={styles.metricCard}>
+              <div className={`${styles.metricIcon} ${styles.metricIconAmber}`}>
+                <FiTrendingUp aria-hidden="true" />
+              </div>
+              <div>
+                <span>{t.freeMargin}</span>
+                <strong>${formatMoney(totalFreeMargin)}</strong>
+                <small>Available to trade</small>
+              </div>
+            </article>
+          </section>
+
+          <div className={styles.contentGrid}>
+            <section className={`${styles.panel} ${styles.walletPanel}`}>
+              <div className={styles.panelHeader}>
+                <div>
+                  <span className={styles.panelEyebrow}>Primary account</span>
+                  <h2>{t.yourWallet}</h2>
+                </div>
+                <button
+                  type="button"
+                  className={styles.textButton}
+                  onClick={() => navigate("/transactions")}
+                >
+                  {t.transactionHistory}
+                </button>
               </div>
 
-              <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-                <div className="flex flex-wrap gap-6 items-center">
-                  <div className="w-36 h-24 rounded overflow-hidden bg-black/20 border border-white/6">
-                    <img
+              <div className={styles.walletBody}>
+                <div className={styles.walletVisual}>
+                  <div className={styles.walletVisualTop}>
+                    <span>NexTrade</span>
+                    <FiActivity aria-hidden="true" />
+                  </div>
+                  <div className={styles.walletAsset}>
+                    <Image
                       src="/crypto-cardfx.png"
-                      alt="Crypto FX Card"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.style.display = "none";
-                      }}
+                      alt="NexTrade wallet"
+                      fill
+                      sizes="140px"
+                      priority
                     />
                   </div>
-
-                  <div>
-                    <div className="text-sm text-white/70">{walletId}</div>
-                    <div className="text-sm text-white/80 mt-2  cursor-pointer hover:bg-white/10 transition">{t.walletBalanceLabel}</div>
-                    <div className="text-2xl font-bold mt-1">${formatMoney(data.balance)}</div>
+                  <div className={styles.walletVisualBottom}>
+                    <span>USD Wallet</span>
+                    <strong>•••• {String(walletId).slice(-4)}</strong>
                   </div>
                 </div>
 
-                <div className="ml-auto flex flex-wrap gap-3">
-                  <button onClick={() => router.push("/withdraw")} className="px-4 py-2 bg-white/6 text-white/80 rounded-md  cursor-pointer hover:bg-white/10 transition">
-                    {t.withdraw}
-                  </button>
-                  <button onClick={() => router.push("/transfer")} className="px-4 py-2 bg-white/6 text-white/80 rounded-md  cursor-pointer hover:bg-white/10 transition">
-                    {t.transfer}
-                  </button>
-                  <button onClick={() => router.push("/deposit")} className="px-4 py-2 bg-blue-500 rounded-md font-semibold text-black  cursor-pointer hover:bg-white/10 transition">
-                    {t.fund}
-                  </button>
+                <div className={styles.walletDetails}>
+                  <div className={styles.walletId}>
+                    <span>{t.walletIdLabel} ID</span>
+                    <strong>{walletId}</strong>
+                  </div>
+                  <div className={styles.balanceBlock}>
+                    <span>{t.walletBalanceLabel}</span>
+                    <strong><small>$</small>{formatMoney(data.balance)}</strong>
+                    <p>USD · Main wallet</p>
+                  </div>
                 </div>
               </div>
+
+              <div className={styles.walletActions}>
+                <button type="button" onClick={() => navigate("/deposit")}>
+                  <span><FiArrowDownLeft aria-hidden="true" /></span>
+                  <div><strong>{t.fund}</strong><small>Add funds</small></div>
+                </button>
+                <button type="button" onClick={() => navigate("/withdraw")}>
+                  <span><FiArrowUpRight aria-hidden="true" /></span>
+                  <div><strong>{t.withdraw}</strong><small>Cash out</small></div>
+                </button>
+                <button type="button" onClick={() => navigate("/transfer")}>
+                  <span><FiRepeat aria-hidden="true" /></span>
+                  <div><strong>{t.transfer}</strong><small>Move money</small></div>
+                </button>
+              </div>
             </section>
-                {/* trading accounts */}
-{/* trading accounts */}
-<section className="bg-white/5 rounded-xl p-6 border border-white/6">
-  <div className="flex items-center justify-between mb-4">
-    <h3 className="text-lg font-semibold">{t.tradingAccounts}</h3>
 
-    <button
-      onClick={() => router.push("/create-account")}
-      className="text-sm text-blue-400 hover:underline"
-    >
-      {t.createAccount}
-    </button>
-  </div>
+            <section className={`${styles.panel} ${styles.quickPanel}`}>
+              <div className={styles.panelHeader}>
+                <div>
+                  <span className={styles.panelEyebrow}>Shortcuts</span>
+                  <h2>Quick access</h2>
+                </div>
+              </div>
 
-  {/* If no trading accounts */}
-  {tradingAccounts.length === 0 && (
-    <div className="text-white/60 text-sm p-4 bg-white/5 rounded">
-      No trading accounts yet. Click “Create Account” to start.
-    </div>
-  )}
+              <div className={styles.quickList}>
+                <button type="button" onClick={() => navigate("/create-account")}>
+                  <span className={styles.quickIcon}><FiPlus aria-hidden="true" /></span>
+                  <div><strong>Create trading account</strong><small>Open a new MT5 account</small></div>
+                  <FiArrowRight aria-hidden="true" />
+                </button>
+                <button type="button" onClick={() => navigate("/transfer-other")}>
+                  <span className={styles.quickIcon}><FiArrowUpRight aria-hidden="true" /></span>
+                  <div><strong>External transfer</strong><small>Send to another account</small></div>
+                  <FiArrowRight aria-hidden="true" />
+                </button>
+                <button type="button" onClick={() => navigate("/settings")}>
+                  <span className={styles.quickIcon}><FiUser aria-hidden="true" /></span>
+                  <div><strong>Manage profile</strong><small>Review account settings</small></div>
+                  <FiArrowRight aria-hidden="true" />
+                </button>
+              </div>
 
-  {/* Render list of all trading accounts */}
-  {tradingAccounts.map((acc) => {
-    const badgeText = acc.activated ? "Activated" : t.notActivated;
-    const badgeColor = acc.activated
-      ? "bg-green-500 text-black"
-      : "bg-yellow-400 text-black";
-
-    return (
-      <div
-        key={acc.id}
-        className="bg-white/6 rounded p-4 mb-4 border border-white/10"
-      >
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          
-          {/* Left section */}
-          <div>
-            <div className="text-sm font-medium">
-              #{acc.hedgingNumber}
-            </div>
-
-            <div className={`inline-block mt-2 px-2 py-1 text-xs rounded ${badgeColor}`}>
-              {badgeText}
-            </div>
-
-            <div className="mt-2 text-xs text-white/70">{t.mt5Hedging}</div>
+              <div className={styles.accountStatus}>
+                <FiShield aria-hidden="true" />
+                <div>
+                  <span>Account status</span>
+                  <strong>Profile active</strong>
+                </div>
+                <span className={styles.statusDot}>Verified</span>
+              </div>
+            </section>
           </div>
 
-          {/* Right section */}
-          <div className="flex flex-wrap gap-6 items-center">
-
-            {/* Balance */}
-            <div className="text-xs text-white/70">
-              <div className="text-xs">{t.accountBalance}</div>
-              <div className="font-semibold">
-                ${formatMoney(acc.accountBalance)}
+          <section className={`${styles.panel} ${styles.accountsPanel}`}>
+            <div className={styles.panelHeader}>
+              <div>
+                <span className={styles.panelEyebrow}>MT5 portfolio</span>
+                <h2>{t.tradingAccounts}</h2>
+                <p>Manage balances, margin, and access for every trading account.</p>
               </div>
-            </div>
-
-            {/* Free Margin */}
-            <div className="text-xs text-white/70">
-              <div className="text-xs">{t.freeMargin}</div>
-              <div className="font-semibold">
-                ${formatMoney(acc.freeMargin)}
-              </div>
-            </div>
-
-            {/* Leverage */}
-            <div className="text-xs text-white/70">
-              <div className="text-xs">{t.leverage}</div>
-              <div className="font-semibold">
-                {acc.leverage}
-              </div>
-            </div>
-
-            {/* Buttons */}
-            <div className="flex gap-2">
-              {/* FUND BUTTON */}
               <button
-                onClick={() => router.push("/deposit-fund")}
-                className="px-3 py-2 bg-white/6 text-white/80 rounded hover:bg-white/10"
+                type="button"
+                className={styles.secondaryButton}
+                onClick={() => navigate("/create-account")}
               >
-                {t.fund}
-              </button>
-
-              {/* TRADE BUTTON */}
-              <button
-                disabled={!acc.activated}
-                className={`px-3 py-2 rounded 
-                  ${acc.activated
-                    ? "bg-blue-500 text-black"
-                    : "bg-blue-500/40 text-black/40 cursor-not-allowed"}`}
-              >
-                Trade
+                <FiPlus aria-hidden="true" />
+                {t.createAccount.replace("+ ", "")}
               </button>
             </div>
 
-          </div>
-        </div>
-      </div>
-    );
-  })}
-</section>
-          </main>
-        </div>
+            {tradingAccounts.length === 0 ? (
+              <div className={styles.emptyAccounts}>
+                <div><FiActivity aria-hidden="true" /></div>
+                <h3>No trading accounts yet</h3>
+                <p>Create your first account to start trading on MT5.</p>
+                <button type="button" onClick={() => navigate("/create-account")}>
+                  <FiPlus aria-hidden="true" />
+                  Create account
+                </button>
+              </div>
+            ) : (
+              <div className={styles.accountsList}>
+                {tradingAccounts.map((account) => (
+                  <article className={styles.accountRow} key={account.id}>
+                    <div className={styles.accountIdentity}>
+                      <div className={styles.accountLogo}>
+                        <FiTrendingUp aria-hidden="true" />
+                      </div>
+                      <div>
+                        <span>{t.mt5Hedging}</span>
+                        <strong>#{account.hedgingNumber}</strong>
+                      </div>
+                    </div>
+
+                    <div className={styles.accountMetric}>
+                      <span>{t.accountBalance}</span>
+                      <strong>${formatMoney(account.accountBalance)}</strong>
+                    </div>
+
+                    <div className={styles.accountMetric}>
+                      <span>{t.freeMargin}</span>
+                      <strong>${formatMoney(account.freeMargin)}</strong>
+                    </div>
+
+                    <div className={styles.accountMetric}>
+                      <span>{t.leverage}</span>
+                      <strong>{account.leverage || "—"}</strong>
+                    </div>
+
+                    <div className={styles.accountState}>
+                      <span className={account.activated ? styles.activeBadge : styles.pendingBadge}>
+                        <i aria-hidden="true" />
+                        {account.activated ? "Activated" : t.notActivated}
+                      </span>
+                    </div>
+
+                    <div className={styles.accountActions}>
+                      <button type="button" onClick={() => navigate("/deposit-fund")}>
+                        {t.fund}
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.tradeButton}
+                        disabled={!account.activated}
+                      >
+                        Trade
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        </main>
       </div>
 
-      {/* mobile sidebar overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 z-40 md:hidden">
-          <div className="absolute inset-0 bg-black/60" onClick={() => setSidebarOpen(false)} />
-          <div className="absolute left-0 top-0 bottom-0 w-72 bg-[#061025] p-4">
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-xl font-bold text-red-500">NexTrade</div>
-              <button className="p-1" onClick={() => setSidebarOpen(false)}>
-                <FiX />
+        <div className={styles.mobileOverlay} role="dialog" aria-modal="true" aria-label="Navigation">
+          <button
+            type="button"
+            className={styles.mobileBackdrop}
+            onClick={() => setSidebarOpen(false)}
+            aria-label="Close navigation"
+          />
+          <aside className={styles.mobileSidebar}>
+            <div className={styles.mobileSidebarHeader}>
+              <div className={styles.brand}>
+                <span className={styles.brandIcon}><FiTrendingUp aria-hidden="true" /></span>
+                <span>Nex<span>Trade</span></span>
+              </div>
+              <button type="button" onClick={() => setSidebarOpen(false)} aria-label="Close navigation">
+                <FiX aria-hidden="true" />
               </button>
             </div>
-            
-            <nav className="space-y-2">
-              <div className="px-2 py-2 rounded bg-white/6">Wallet & Accounts</div>
-              <div className="px-2 py-2 rounded" onClick={() => router.push ("/settings")}>Settings</div>
-              <div className="px-2 py-2 rounded" onClick={() => router.push("/transfer")}>Transfer to NexTrade account</div>
-              <div className="px-2 py-2 rounded" onClick={() => router.push ("/transfer-other")}>Transfer to External account</div>
+
+            <div className={styles.mobileProfile}>
+              <div className={styles.avatar}>{name?.[0]?.toUpperCase() ?? "U"}</div>
+              <div><strong>{name}</strong><span>{data.email}</span></div>
+            </div>
+
+            <nav className={styles.navigation} aria-label="Mobile navigation">
+              <p className={styles.navLabel}>Workspace</p>
+              {[...primaryNavigation, ...accountNavigation].map((item) => {
+                const Icon = item.icon;
+                return (
+                  <button
+                    type="button"
+                    key={item.label}
+                    className={item.current ? styles.navItemActive : styles.navItem}
+                    onClick={() => item.path ? navigate(item.path) : setSidebarOpen(false)}
+                    aria-current={item.current ? "page" : undefined}
+                  >
+                    <Icon aria-hidden="true" />
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
             </nav>
-          </div>
+          </aside>
         </div>
       )}
 
-      {/* floating chat/help button */}
-      <button className="fixed right-6 bottom-6 w-14 h-14 rounded-full bg-blue-500 text-black font-bold shadow-lg flex items-center justify-center  cursor-pointer hover:bg-white/10 transition">
-        💬
+      <button type="button" className={styles.helpButton} aria-label="Get help" title="Get help">
+        <FiHelpCircle aria-hidden="true" />
       </button>
     </div>
   );

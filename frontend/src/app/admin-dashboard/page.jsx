@@ -1,11 +1,29 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  FiActivity,
+  FiArrowRight,
+  FiDollarSign,
+  FiGift,
+  FiGrid,
+  FiLock,
+  FiPlus,
+  FiRefreshCw,
+  FiRotateCcw,
+  FiShield,
+  FiTrash2,
+  FiUnlock,
+  FiUserCheck,
+  FiUsers,
+} from "react-icons/fi";
+import styles from "./admin-dashboard.module.css";
 
 export default function AdminDashboard() {
   const [users, setUsers] = useState([]);
   const [amounts, setAmounts] = useState({}); // per-user reverse amount
   const [loading, setLoading] = useState(null); // store current loading key (e.g. `${id}-fund`)
+  const [usersLoading, setUsersLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -19,6 +37,7 @@ export default function AdminDashboard() {
   // Fetch users (handles several response shapes)
   // ============================================
   const fetchUsers = async () => {
+    setUsersLoading(true);
     try {
       const res = await fetch("https://investment-site-x6tr.onrender.com/users/all");
       const data = await res.json();
@@ -33,6 +52,8 @@ export default function AdminDashboard() {
     } catch (err) {
       console.error("Failed to load users:", err);
       setUsers([]);
+    } finally {
+      setUsersLoading(false);
     }
   };
 
@@ -191,114 +212,308 @@ export default function AdminDashboard() {
   // ============================================
   // RENDER UI
   // ============================================
+  const totalBalance = users.reduce(
+    (sum, user) => sum + Number(user.balance ?? 0),
+    0
+  );
+  const restrictedUsers = users.filter((user) => Boolean(user.restricted)).length;
+  const activeUsers = Math.max(0, users.length - restrictedUsers);
+
+  const formatMoney = (value) =>
+    Number(value ?? 0).toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
   return (
-    <div className="min-h-screen bg-[#0d243a] text-white p-6">
-      <h1 className="text-3xl font-bold mb-6 text-center">NextTrade Admin Dashboard</h1>
+    <div className={styles.adminShell}>
+      <div className={styles.ambientGlow} aria-hidden="true" />
 
-      <div className="overflow-x-auto bg-gray-800 p-6 rounded-lg shadow-lg">
-        <table className="min-w-full text-left">
-          <thead>
-            <tr className="border-b border-gray-700 text-sm text-gray-300">
-              <th className="py-2">Full Name</th>
-              <th>Email</th>
-              <th>Account</th>
-              <th>Balance</th>
-              <th>Actions</th>
-              <th>Reverse Payment</th>
-            </tr>
-          </thead>
+      <header className={styles.adminTopbar}>
+        <div className={styles.topbarInner}>
+          <div className={styles.adminBrand}>
+            <span className={styles.brandMark}>
+              <FiShield aria-hidden="true" />
+            </span>
+            <div>
+              <strong>Nex<span>Trade</span></strong>
+              <small>Administration</small>
+            </div>
+          </div>
 
-          <tbody>
-            {users.length === 0 ? (
-              <tr>
-                <td colSpan="6" className="text-center py-4 text-gray-400">
-                  No users found
-                </td>
-              </tr>
-            ) : (
-              users.map((u) => {
-                // normalize fields safely
-                const id = u.id;
-                const fullname = u.fullname || u.name || "—";
-                const email = u.email || "";
-                const account = u.accountNumber || email || "—";
-                const balance = Number(u.balance ?? 0);
-                const restricted = Boolean(u.restricted);
+          <div className={styles.adminIdentity}>
+            <span>Administrator</span>
+            <div>A</div>
+          </div>
+        </div>
+      </header>
 
-                return (
-                  <tr key={id ?? email} className="border-b border-gray-700 hover:bg-gray-700 text-sm">
-                    <td className="py-3">{fullname}</td>
-                    <td>{email}</td>
-                    <td>{account}</td>
-                    <td>${balance.toFixed(2)}</td>
+      <div className={styles.adminLayout}>
+        <aside className={styles.adminSidebar}>
+          <nav aria-label="Admin navigation">
+            <p>Management</p>
+            <button type="button" className={styles.navActive}>
+              <FiGrid aria-hidden="true" />
+              <span>Overview</span>
+            </button>
+            <button type="button" onClick={() => router.push("/admin-dashboard/giftcards")}>
+              <FiGift aria-hidden="true" />
+              <span>Gift cards</span>
+              <FiArrowRight aria-hidden="true" />
+            </button>
+          </nav>
 
-                    <td>
-                      <div className="flex items-center gap-2">
-                        <button
-                          className="px-2 py-1 bg-green-600 rounded"
-                          onClick={() => fundUser(email)}
-                          disabled={loading === `${email}-fund`}
-                        >
-                          {loading === `${email}-fund` ? "..." : "Fund"}
-                        </button>
-                        
-                        <button>
-                          <div className="px-2 py-1 bg-pink-600 rounded"  onClick={() => router.push("/admin-dashboard/giftcards")}>GIFTCARD</div>
-                        </button>
+          <div className={styles.sidebarStatus}>
+            <FiShield aria-hidden="true" />
+            <div>
+              <strong>Admin session</strong>
+              <span>Secure access enabled</span>
+            </div>
+          </div>
+        </aside>
 
-                        <button
-                          className="px-2 py-1 bg-blue-600 rounded"
-                          onClick={() => resetBalance(email)}
-                          disabled={loading === `${email}-reset`}
-                        >
-                          {loading === `${email}-reset` ? "..." : "Reset"}
-                        </button>
+        <main className={styles.adminMain}>
+          <div className={styles.pageHeading}>
+            <div>
+              <span className={styles.eyebrow}>Control center</span>
+              <h1>Admin dashboard</h1>
+              <p>Monitor users, balances, access, and payment adjustments.</p>
+            </div>
 
-                        <button
-                          className="px-2 py-1 bg-yellow-500 text-black rounded"
-                          onClick={() => restrictUser(email, !restricted)}
-                          disabled={loading === `${email}-restrict`}
-                        >
-                          {loading === `${email}-restrict` ? "..." : restricted ? "Unrestrict" : "Restrict"}
-                        </button>
+            <div className={styles.headingActions}>
+              <button
+                type="button"
+                className={styles.giftcardButton}
+                onClick={() => router.push("/admin-dashboard/giftcards")}
+              >
+                <FiGift aria-hidden="true" />
+                Gift cards
+              </button>
+              <button
+                type="button"
+                className={styles.refreshButton}
+                onClick={fetchUsers}
+                disabled={usersLoading}
+              >
+                <FiRefreshCw className={usersLoading ? styles.spinning : ""} aria-hidden="true" />
+                Refresh
+              </button>
+            </div>
+          </div>
 
-                        <button
-                          className="px-2 py-1 bg-red-600 rounded"
-                          onClick={() => deleteUser(email)}
-                          disabled={loading === `${email}-delete`}
-                        >
-                          {loading === `${email}-delete` ? "..." : "Delete"}
-                        </button>
-                      </div>
-                    </td>
+          <section className={styles.adminMetrics} aria-label="User summary">
+            <article>
+              <span className={`${styles.metricIcon} ${styles.metricBlue}`}>
+                <FiUsers aria-hidden="true" />
+              </span>
+              <div>
+                <small>Total users</small>
+                <strong>{users.length}</strong>
+                <p>Registered profiles</p>
+              </div>
+            </article>
 
-                    <td>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number"
-                          placeholder="Amount"
-                          value={amounts[id] ?? ""}
-                          onChange={(e) => setAmounts({ ...amounts, [id]: e.target.value })}
-                          className="w-24 p-1 rounded bg-gray-600 text-white text-sm"
-                        />
+            <article>
+              <span className={`${styles.metricIcon} ${styles.metricGreen}`}>
+                <FiDollarSign aria-hidden="true" />
+              </span>
+              <div>
+                <small>Combined balance</small>
+                <strong>${formatMoney(totalBalance)}</strong>
+                <p>Across all wallets</p>
+              </div>
+            </article>
 
-                        <button
-                          onClick={() => handleReverse(id)}
-                          disabled={loading === `${id}-reverse`}
-                          className={`${
-                            loading === `${id}-reverse` ? "bg-gray-500" : "bg-red-500 hover:bg-red-600"
-                          } text-white text-sm px-3 py-1 rounded`}
-                        >
-                          {loading === `${id}-reverse` ? "Reversing..." : "Reverse"}
-                        </button>
-                      </div>
-                    </td>
+            <article>
+              <span className={`${styles.metricIcon} ${styles.metricPurple}`}>
+                <FiUserCheck aria-hidden="true" />
+              </span>
+              <div>
+                <small>Active users</small>
+                <strong>{activeUsers}</strong>
+                <p>Accounts with access</p>
+              </div>
+            </article>
+
+            <article>
+              <span className={`${styles.metricIcon} ${styles.metricAmber}`}>
+                <FiLock aria-hidden="true" />
+              </span>
+              <div>
+                <small>Restricted</small>
+                <strong>{restrictedUsers}</strong>
+                <p>Limited accounts</p>
+              </div>
+            </article>
+          </section>
+
+          <section className={styles.usersPanel}>
+            <div className={styles.panelHeader}>
+              <div>
+                <span className={styles.panelEyebrow}>User management</span>
+                <h2>Customer accounts</h2>
+                <p>Review account details and perform administrative actions.</p>
+              </div>
+              <span className={styles.recordCount}>{users.length} records</span>
+            </div>
+
+            <div className={styles.tableWrap}>
+              <table className={styles.usersTable}>
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Account</th>
+                    <th>Balance</th>
+                    <th>Status</th>
+                    <th>Account actions</th>
+                    <th>Reverse payment</th>
                   </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
+                </thead>
+
+                <tbody>
+                  {usersLoading && users.length === 0 ? (
+                    <tr className={styles.tableMessage}>
+                      <td colSpan="6">
+                        <FiRefreshCw className={styles.spinning} aria-hidden="true" />
+                        Loading customer accounts…
+                      </td>
+                    </tr>
+                  ) : users.length === 0 ? (
+                    <tr className={styles.tableMessage}>
+                      <td colSpan="6">
+                        <FiUsers aria-hidden="true" />
+                        No users found
+                      </td>
+                    </tr>
+                  ) : (
+                    users.map((user) => {
+                      const id = user.id;
+                      const fullname = user.fullname || user.name || "—";
+                      const email = user.email || "";
+                      const account = user.accountNumber || email || "—";
+                      const balance = Number(user.balance ?? 0);
+                      const restricted = Boolean(user.restricted);
+
+                      return (
+                        <tr key={id ?? email}>
+                          <td data-label="User">
+                            <div className={styles.userCell}>
+                              <span>{fullname?.[0]?.toUpperCase() || "U"}</span>
+                              <div>
+                                <strong>{fullname}</strong>
+                                <small>{email}</small>
+                              </div>
+                            </div>
+                          </td>
+
+                          <td data-label="Account">
+                            <span className={styles.accountNumber}>{account}</span>
+                          </td>
+
+                          <td data-label="Balance">
+                            <strong className={styles.balance}>${formatMoney(balance)}</strong>
+                          </td>
+
+                          <td data-label="Status">
+                            <span className={restricted ? styles.restrictedBadge : styles.activeBadge}>
+                              <i aria-hidden="true" />
+                              {restricted ? "Restricted" : "Active"}
+                            </span>
+                          </td>
+
+                          <td data-label="Account actions" className={styles.actionsCell}>
+                            <div className={styles.accountActions}>
+                              <button
+                                type="button"
+                                className={styles.fundAction}
+                                onClick={() => fundUser(email)}
+                                disabled={loading === `${email}-fund`}
+                                title="Fund user"
+                              >
+                                {loading === `${email}-fund` ? <FiRefreshCw className={styles.spinning} /> : <FiPlus />}
+                                <span>Fund</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                className={styles.resetAction}
+                                onClick={() => resetBalance(email)}
+                                disabled={loading === `${email}-reset`}
+                                title="Reset balance"
+                              >
+                                {loading === `${email}-reset` ? <FiRefreshCw className={styles.spinning} /> : <FiRotateCcw />}
+                                <span>Reset</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                className={styles.restrictAction}
+                                onClick={() => restrictUser(email, !restricted)}
+                                disabled={loading === `${email}-restrict`}
+                                title={restricted ? "Unrestrict user" : "Restrict user"}
+                              >
+                                {loading === `${email}-restrict` ? (
+                                  <FiRefreshCw className={styles.spinning} />
+                                ) : restricted ? (
+                                  <FiUnlock />
+                                ) : (
+                                  <FiLock />
+                                )}
+                                <span>{restricted ? "Unrestrict" : "Restrict"}</span>
+                              </button>
+
+                              <button
+                                type="button"
+                                className={styles.deleteAction}
+                                onClick={() => deleteUser(email)}
+                                disabled={loading === `${email}-delete`}
+                                title="Delete user"
+                              >
+                                {loading === `${email}-delete` ? <FiRefreshCw className={styles.spinning} /> : <FiTrash2 />}
+                                <span>Delete</span>
+                              </button>
+                            </div>
+                          </td>
+
+                          <td data-label="Reverse payment" className={styles.reverseCell}>
+                            <div className={styles.reverseForm}>
+                              <label>
+                                <span className={styles.currencyPrefix}>$</span>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  inputMode="decimal"
+                                  aria-label={`Reverse payment amount for ${fullname}`}
+                                  placeholder="Amount"
+                                  value={amounts[id] ?? ""}
+                                  onChange={(event) =>
+                                    setAmounts({ ...amounts, [id]: event.target.value })
+                                  }
+                                />
+                              </label>
+                              <button
+                                type="button"
+                                onClick={() => handleReverse(id)}
+                                disabled={loading === `${id}-reverse`}
+                              >
+                                {loading === `${id}-reverse` ? (
+                                  <FiRefreshCw className={styles.spinning} />
+                                ) : (
+                                  <FiActivity />
+                                )}
+                                {loading === `${id}-reverse` ? "Reversing" : "Reverse"}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </main>
       </div>
     </div>
   );

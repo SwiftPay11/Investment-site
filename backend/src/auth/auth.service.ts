@@ -62,34 +62,9 @@ async register(dto: any) {
   if (!user) throw new UnauthorizedException("Invalid credentials");
 
   const match = await bcrypt.compare(password, user.password);
-  if (!match) throw new UnauthorizedException("Invalid credentials");
-
-  // Generate login verification code
-  const code = Math.floor(100000 + Math.random() * 900000).toString();
-
-  user.loginCode = code;
-  user.loginCodeExpires = Date.now() + 5 * 60 * 1000; // valid 5 mins
+  if (!match) throw new UnauthorizedException("Invalid credentials")
 
   await this.usersService.updateUser(user);
-
-  // Send email
-  await this.resend.emails.send({
-    from: 'NexTrade Login <noreply@nextrade.pro>',
-    to: user.email,
-    subject: "Your NexTrade Login Verification Code",
-    html: `
-      <h2>Your NexTrade Login Code</h2>
-      <p>Use this code to complete your login:</p>
-      <h1>${code}</h1>
-      <p>This code will expire in 5 minutes.</p>
-    `,
-  });
-
-  return {
-    status: "verify",
-    message: "A login verification code has been sent to your email.",
-    email, // needed for next step
-  };
 }
 
 

@@ -1,0 +1,1447 @@
+.adminShell {
+  --page: #050916;
+  --page-deep: #030611;
+  --surface: rgba(13, 21, 40, 0.88);
+  --surface-strong: #101a32;
+  --surface-soft: rgba(255, 255, 255, 0.035);
+  --line: rgba(148, 163, 184, 0.14);
+  --line-strong: rgba(96, 165, 250, 0.24);
+  --text: #f7f9ff;
+  --text-soft: #a9b4ca;
+  --muted: #6f7d98;
+  --blue: #3b82f6;
+  --blue-bright: #60a5fa;
+  --green: #34d399;
+  --amber: #fbbf24;
+  --red: #fb7185;
+  min-height: 100vh;
+  position: relative;
+  isolation: isolate;
+  overflow-x: hidden;
+  color: var(--text);
+  background:
+    radial-gradient(circle at 85% -8%, rgba(59, 130, 246, 0.14), transparent 32rem),
+    radial-gradient(circle at 7% 70%, rgba(99, 102, 241, 0.07), transparent 26rem),
+    linear-gradient(180deg, #070c1b, var(--page) 48%, var(--page-deep));
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+.adminShell *,
+.adminShell *::before,
+.adminShell *::after {
+  box-sizing: border-box;
+}
+
+.adminShell button,
+.adminShell input {
+  font: inherit;
+}
+
+.adminShell button:focus-visible,
+.adminShell input:focus-visible {
+  outline: 2px solid var(--blue-bright);
+  outline-offset: 2px;
+}
+
+.ambientGlow {
+  position: fixed;
+  z-index: -1;
+  top: 18%;
+  right: -14rem;
+  width: 28rem;
+  height: 28rem;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.08);
+  filter: blur(90px);
+  pointer-events: none;
+}
+
+.adminTopbar {
+  position: sticky;
+  z-index: 30;
+  top: 0;
+  border-bottom: 1px solid var(--line);
+  background: rgba(5, 9, 22, 0.8);
+  backdrop-filter: blur(22px);
+}
+
+.topbarInner {
+  width: min(100%, 1580px);
+  height: 74px;
+  margin: 0 auto;
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.adminBrand,
+.adminIdentity,
+.sidebarStatus,
+.pageHeading,
+.headingActions,
+.panelHeader,
+.userCell,
+.giftcardHeading,
+.giftcardCardTop {
+  display: flex;
+  align-items: center;
+}
+
+.adminBrand {
+  gap: 11px;
+}
+
+.brandMark {
+  width: 39px;
+  height: 39px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  border: 1px solid rgba(147, 197, 253, 0.26);
+  border-radius: 12px;
+  color: #fff;
+  background: linear-gradient(145deg, #2563eb, #4f46e5);
+  box-shadow: 0 12px 25px rgba(37, 99, 235, 0.24), inset 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.brandMark svg {
+  width: 18px;
+  height: 18px;
+}
+
+.adminBrand > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.adminBrand strong {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 760;
+  letter-spacing: -0.04em;
+}
+
+.adminBrand strong span {
+  color: var(--blue-bright);
+}
+
+.adminBrand small {
+  margin-top: 1px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.adminIdentity {
+  gap: 10px;
+}
+
+.adminIdentity > span {
+  color: var(--text-soft);
+  font-size: 11px;
+  font-weight: 580;
+}
+
+.adminIdentity > div {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(147, 197, 253, 0.2);
+  border-radius: 12px;
+  color: #eaf2ff;
+  background: linear-gradient(145deg, #1d4ed8, #4338ca);
+  font-size: 13px;
+  font-weight: 720;
+}
+
+.adminLayout {
+  width: min(100%, 1580px);
+  min-height: calc(100vh - 74px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 224px minmax(0, 1fr);
+}
+
+.adminSidebar {
+  border-right: 1px solid var(--line);
+}
+
+.adminSidebar > nav {
+  position: sticky;
+  top: 74px;
+  min-height: calc(100vh - 74px);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 29px 16px 104px;
+}
+
+.adminSidebar nav > p {
+  margin: 0 11px 8px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 720;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.adminSidebar nav > button {
+  min-height: 44px;
+  display: grid;
+  grid-template-columns: 20px 1fr 15px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  color: var(--text-soft);
+  text-align: left;
+  background: transparent;
+  cursor: pointer;
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.adminSidebar nav > button:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  transform: translateX(2px);
+}
+
+.adminSidebar nav > button svg:last-child {
+  justify-self: end;
+  width: 12px;
+  height: 12px;
+  opacity: 0.5;
+}
+
+.adminSidebar nav > .navActive {
+  position: relative;
+  color: #eaf3ff;
+  border-color: rgba(96, 165, 250, 0.18);
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.2), rgba(59, 130, 246, 0.07));
+}
+
+.navActive::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  width: 3px;
+  height: 19px;
+  border-radius: 0 4px 4px 0;
+  background: var(--blue-bright);
+  box-shadow: 0 0 12px rgba(96, 165, 250, 0.55);
+}
+
+.navActive > svg:first-child {
+  color: var(--blue-bright);
+}
+
+.sidebarStatus {
+  position: fixed;
+  bottom: 22px;
+  width: 192px;
+  gap: 10px;
+  margin-left: 16px;
+  padding: 13px;
+  border: 1px solid rgba(52, 211, 153, 0.13);
+  border-radius: 13px;
+  color: var(--green);
+  background: rgba(16, 185, 129, 0.055);
+}
+
+.sidebarStatus > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebarStatus strong {
+  color: var(--text-soft);
+  font-size: 9px;
+  font-weight: 620;
+}
+
+.sidebarStatus span {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.adminMain {
+  min-width: 0;
+  padding: 39px clamp(24px, 3vw, 46px) 70px;
+}
+
+.pageHeading,
+.giftcardHeading {
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 27px;
+}
+
+.eyebrow,
+.panelEyebrow {
+  color: var(--blue-bright);
+  font-size: 9px;
+  font-weight: 720;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.pageHeading h1,
+.giftcardHeading h1 {
+  margin: 6px 0 7px;
+  color: var(--text);
+  font-size: clamp(27px, 3vw, 35px);
+  font-weight: 690;
+  letter-spacing: -0.045em;
+  line-height: 1.12;
+}
+
+.pageHeading p,
+.giftcardHeading p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.headingActions {
+  flex: 0 0 auto;
+  gap: 9px;
+}
+
+.giftcardButton,
+.refreshButton,
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 11px;
+  font-size: 10px;
+  font-weight: 640;
+  cursor: pointer;
+  transition: color 160ms ease, border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.giftcardButton,
+.refreshButton {
+  min-height: 41px;
+  padding: 0 14px;
+}
+
+.giftcardButton {
+  border: 1px solid rgba(196, 181, 253, 0.2);
+  color: #ddd6fe;
+  background: rgba(139, 92, 246, 0.09);
+}
+
+.refreshButton {
+  border: 1px solid var(--line-strong);
+  color: #dbeafe;
+  background: rgba(59, 130, 246, 0.09);
+}
+
+.giftcardButton:hover,
+.refreshButton:hover:not(:disabled) {
+  color: #fff;
+  background: rgba(59, 130, 246, 0.16);
+  transform: translateY(-1px);
+}
+
+.refreshButton:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+
+.adminMetrics,
+.giftcardMetrics {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.adminMetrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.giftcardMetrics {
+  grid-template-columns: repeat(2, minmax(0, 260px));
+}
+
+.adminMetrics article,
+.giftcardMetrics article {
+  min-width: 0;
+  min-height: 108px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 17px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgba(13, 21, 40, 0.78);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.025);
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.adminMetrics article:hover,
+.giftcardMetrics article:hover {
+  border-color: rgba(96, 165, 250, 0.19);
+  background: rgba(16, 26, 50, 0.9);
+  transform: translateY(-2px);
+}
+
+.metricIcon {
+  width: 39px;
+  height: 39px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+}
+
+.metricBlue {
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.13);
+}
+
+.metricGreen {
+  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.metricPurple {
+  color: #c4b5fd;
+  background: rgba(139, 92, 246, 0.13);
+}
+
+.metricAmber {
+  color: #fcd34d;
+  background: rgba(245, 158, 11, 0.11);
+}
+
+.adminMetrics article > div,
+.giftcardMetrics article > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.adminMetrics small,
+.giftcardMetrics small {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.adminMetrics strong,
+.giftcardMetrics strong {
+  margin-top: 3px;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 680;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.adminMetrics p,
+.giftcardMetrics p {
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.usersPanel,
+.giftcardPanel {
+  min-width: 0;
+  padding: 23px;
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background: rgba(13, 21, 40, 0.82);
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.14), inset 0 1px rgba(255, 255, 255, 0.025);
+}
+
+.panelHeader {
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 19px;
+}
+
+.panelHeader h2 {
+  margin: 5px 0 0;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.panelHeader p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.recordCount {
+  flex: 0 0 auto;
+  padding: 6px 9px;
+  border: 1px solid rgba(96, 165, 250, 0.13);
+  border-radius: 999px;
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.07);
+  font-size: 8px;
+  font-weight: 650;
+}
+
+.tableWrap {
+  min-width: 0;
+  overflow-x: auto;
+  border: 1px solid rgba(148, 163, 184, 0.09);
+  border-radius: 14px;
+}
+
+.usersTable {
+  width: 100%;
+  min-width: 1120px;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+.usersTable th {
+  height: 43px;
+  padding: 0 13px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  text-align: left;
+  background: rgba(255, 255, 255, 0.018);
+  font-size: 8px;
+  font-weight: 720;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.usersTable td {
+  padding: 13px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+  color: var(--text-soft);
+  font-size: 10px;
+  vertical-align: middle;
+}
+
+.usersTable tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.usersTable tbody tr:not(.tableMessage) {
+  transition: background 150ms ease;
+}
+
+.usersTable tbody tr:not(.tableMessage):hover {
+  background: rgba(59, 130, 246, 0.035);
+}
+
+.userCell {
+  min-width: 200px;
+  gap: 10px;
+}
+
+.userCell > span {
+  width: 35px;
+  height: 35px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(96, 165, 250, 0.15);
+  border-radius: 11px;
+  color: #dbeafe;
+  background: rgba(37, 99, 235, 0.12);
+  font-size: 11px;
+  font-weight: 680;
+}
+
+.userCell > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.userCell strong {
+  max-width: 170px;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 620;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userCell small {
+  max-width: 190px;
+  margin-top: 3px;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.accountNumber {
+  display: block;
+  max-width: 180px;
+  overflow: hidden;
+  color: var(--text-soft);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.balance {
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.restrictedBadge,
+.activeBadge,
+.pendingBadge {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 8px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.activeBadge {
+  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.restrictedBadge {
+  color: #fda4af;
+  background: rgba(244, 63, 94, 0.1);
+}
+
+.pendingBadge {
+  color: #fcd34d;
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.activeBadge i,
+.restrictedBadge i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 7px currentColor;
+}
+
+.accountActions {
+  min-width: 260px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.accountActions button {
+  min-height: 31px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text-soft);
+  background: rgba(255, 255, 255, 0.025);
+  font-size: 8px;
+  font-weight: 620;
+  cursor: pointer;
+  transition: color 150ms ease, border-color 150ms ease, background 150ms ease;
+}
+
+.accountActions button svg {
+  width: 11px;
+  height: 11px;
+}
+
+.accountActions button:hover:not(:disabled) {
+  color: var(--text);
+}
+
+.accountActions .fundAction {
+  border-color: rgba(52, 211, 153, 0.17);
+  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.07);
+}
+
+.accountActions .resetAction {
+  border-color: rgba(96, 165, 250, 0.17);
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.07);
+}
+
+.accountActions .restrictAction {
+  border-color: rgba(251, 191, 36, 0.16);
+  color: #fcd34d;
+  background: rgba(245, 158, 11, 0.065);
+}
+
+.accountActions .deleteAction {
+  border-color: rgba(251, 113, 133, 0.16);
+  color: #fda4af;
+  background: rgba(244, 63, 94, 0.065);
+}
+
+.accountActions button:disabled,
+.reverseForm button:disabled,
+.reviewActions button:disabled {
+  opacity: 0.45;
+  cursor: wait;
+}
+
+.reverseForm {
+  min-width: 226px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.reverseForm label {
+  position: relative;
+  min-width: 0;
+  flex: 1;
+}
+
+.currencyPrefix {
+  position: absolute;
+  top: 50%;
+  left: 9px;
+  color: var(--muted);
+  font-size: 9px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.reverseForm input {
+  width: 100%;
+  height: 33px;
+  padding: 0 8px 0 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.035);
+  font-size: 9px;
+  outline: 0;
+}
+
+.reverseForm input::placeholder {
+  color: #56627a;
+}
+
+.reverseForm input:focus {
+  border-color: rgba(96, 165, 250, 0.38);
+}
+
+.reverseForm > button {
+  min-height: 33px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 9px;
+  border: 1px solid rgba(251, 113, 133, 0.17);
+  border-radius: 8px;
+  color: #fda4af;
+  background: rgba(244, 63, 94, 0.07);
+  font-size: 8px;
+  font-weight: 620;
+  cursor: pointer;
+}
+
+.reverseForm > button:hover:not(:disabled) {
+  color: #fff;
+  background: rgba(244, 63, 94, 0.15);
+}
+
+.tableMessage td {
+  height: 180px;
+  text-align: center;
+}
+
+.tableMessage td,
+.tableMessage td > div {
+  color: var(--muted);
+}
+
+.tableMessage td svg {
+  display: block;
+  width: 22px;
+  height: 22px;
+  margin: 0 auto 9px;
+  color: var(--blue-bright);
+}
+
+.spinning {
+  animation: spin 900ms linear infinite;
+}
+
+/* Gift-card review */
+.giftcardMain {
+  width: min(100%, 1420px);
+  margin: 0 auto;
+  padding: 39px clamp(24px, 4vw, 54px) 70px;
+}
+
+.giftcardHeading {
+  align-items: flex-end;
+}
+
+.backButton {
+  margin-bottom: 19px;
+  padding: 0;
+  border: 0;
+  color: var(--text-soft);
+  background: transparent;
+}
+
+.backButton:hover {
+  color: var(--blue-bright);
+  transform: translateX(-2px);
+}
+
+.errorBanner {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 18px;
+  padding: 13px 15px;
+  border: 1px solid rgba(251, 113, 133, 0.2);
+  border-radius: 13px;
+  color: #fda4af;
+  background: rgba(244, 63, 94, 0.07);
+}
+
+.errorBanner > svg {
+  width: 30px;
+  height: 30px;
+  padding: 8px;
+  border-radius: 9px;
+  background: rgba(244, 63, 94, 0.1);
+}
+
+.errorBanner > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.errorBanner strong {
+  color: #fecdd3;
+  font-size: 10px;
+}
+
+.errorBanner span {
+  margin-top: 2px;
+  color: #fda4af;
+  font-size: 8px;
+}
+
+.errorBanner button {
+  padding: 7px 10px;
+  border: 1px solid rgba(251, 113, 133, 0.18);
+  border-radius: 8px;
+  color: #fecdd3;
+  background: rgba(244, 63, 94, 0.08);
+  font-size: 8px;
+  cursor: pointer;
+}
+
+.giftcardLoading,
+.giftcardEmpty {
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 30px;
+  border: 1px dashed rgba(148, 163, 184, 0.15);
+  border-radius: 15px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.012);
+}
+
+.giftcardLoading > svg {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 12px;
+  color: var(--blue-bright);
+}
+
+.giftcardLoading strong,
+.giftcardEmpty h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 630;
+}
+
+.giftcardLoading span,
+.giftcardEmpty p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.giftcardEmpty > span {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 13px;
+  border-radius: 14px;
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.giftcardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.giftcardCard {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 17px;
+  border: 1px solid rgba(148, 163, 184, 0.11);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.018);
+  transition: transform 160ms ease, border-color 160ms ease, background 160ms ease;
+}
+
+.giftcardCard:hover {
+  border-color: rgba(96, 165, 250, 0.18);
+  background: rgba(59, 130, 246, 0.03);
+  transform: translateY(-2px);
+}
+
+.giftcardCardTop {
+  min-width: 0;
+  gap: 10px;
+}
+
+.giftcardIcon {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(196, 181, 253, 0.15);
+  border-radius: 11px;
+  color: #c4b5fd;
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.giftcardCardTop > div:nth-child(2) {
+  min-width: 0;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.giftcardCardTop > div:nth-child(2) span {
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.giftcardCardTop > div:nth-child(2) strong {
+  margin-top: 2px;
+  overflow: hidden;
+  color: var(--text-soft);
+  font-size: 10px;
+  font-weight: 620;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pendingBadge svg {
+  width: 9px;
+  height: 9px;
+}
+
+.giftcardAmount {
+  margin: 16px 0;
+  padding: 15px;
+  border: 1px solid rgba(52, 211, 153, 0.11);
+  border-radius: 13px;
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.giftcardAmount span {
+  display: block;
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.giftcardAmount strong {
+  display: block;
+  margin-top: 4px;
+  color: #6ee7b7;
+  font-size: 20px;
+  font-weight: 680;
+  letter-spacing: -0.03em;
+}
+
+.giftcardDetails {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 11px;
+  margin: 0 0 15px;
+}
+
+.giftcardDetails > div {
+  min-width: 0;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.022);
+}
+
+.giftcardDetails dt {
+  color: var(--muted);
+  font-size: 7px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.giftcardDetails dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+  color: var(--text-soft);
+  font-size: 9px;
+}
+
+.giftcardDetails .noteRow {
+  grid-column: 1 / -1;
+}
+
+.evidenceBlock {
+  margin-top: auto;
+}
+
+.evidenceBlock > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 8px;
+}
+
+.evidenceBlock img,
+.noEvidence {
+  width: 100%;
+  height: 165px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 12px;
+}
+
+.evidenceBlock img {
+  display: block;
+  object-fit: cover;
+  background: #070b16;
+}
+
+.noEvidence {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 7px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.015);
+  font-size: 8px;
+}
+
+.noEvidence svg {
+  width: 19px;
+  height: 19px;
+}
+
+.reviewActions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.reviewActions button {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: 10px;
+  font-size: 9px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: color 150ms ease, background 150ms ease, transform 150ms ease;
+}
+
+.approveButton {
+  border: 1px solid rgba(52, 211, 153, 0.18);
+  color: #6ee7b7;
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.rejectButton {
+  border: 1px solid rgba(251, 113, 133, 0.18);
+  color: #fda4af;
+  background: rgba(244, 63, 94, 0.08);
+}
+
+.approveButton:hover:not(:disabled) {
+  color: #fff;
+  background: rgba(16, 185, 129, 0.17);
+  transform: translateY(-1px);
+}
+
+.rejectButton:hover:not(:disabled) {
+  color: #fff;
+  background: rgba(244, 63, 94, 0.17);
+  transform: translateY(-1px);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 1240px) {
+  .adminMetrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .giftcardGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 980px) {
+  .adminLayout {
+    display: block;
+  }
+
+  .adminSidebar {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .adminSidebar > nav {
+    position: static;
+    min-height: auto;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    padding: 11px 22px;
+    overflow-x: auto;
+  }
+
+  .adminSidebar nav > p,
+  .sidebarStatus {
+    display: none;
+  }
+
+  .adminSidebar nav > button {
+    width: auto;
+    min-width: max-content;
+    grid-template-columns: 18px auto 13px;
+    padding: 0 13px;
+  }
+
+  .navActive::before {
+    inset: auto 12px -1px;
+    width: auto;
+    height: 2px;
+    border-radius: 3px 3px 0 0;
+  }
+
+  .adminMain {
+    padding-top: 32px;
+  }
+
+  .usersTable {
+    min-width: 0;
+  }
+
+  .usersTable thead {
+    display: none;
+  }
+
+  .usersTable,
+  .usersTable tbody,
+  .usersTable tr,
+  .usersTable td {
+    display: block;
+    width: 100%;
+  }
+
+  .usersTable tbody {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .usersTable tbody tr {
+    min-width: 0;
+    padding: 15px;
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.015);
+  }
+
+  .usersTable td {
+    min-height: 39px;
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.07);
+  }
+
+  .usersTable td::before {
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: 8px;
+    font-weight: 680;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .usersTable td:last-child {
+    border-bottom: 0;
+  }
+
+  .usersTable .actionsCell,
+  .usersTable .reverseCell {
+    display: block;
+    padding-top: 13px;
+  }
+
+  .actionsCell::before,
+  .reverseCell::before {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .userCell {
+    min-width: 0;
+  }
+
+  .accountActions,
+  .reverseForm {
+    min-width: 0;
+  }
+
+  .accountActions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .accountActions button {
+    width: 100%;
+  }
+
+  .tableMessage {
+    grid-column: 1 / -1;
+  }
+
+  .tableMessage td {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    height: 160px;
+    border: 0;
+  }
+
+  .tableMessage td::before {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .topbarInner {
+    height: 68px;
+    padding: 0 18px;
+  }
+
+  .adminIdentity > span {
+    display: none;
+  }
+
+  .adminMain,
+  .giftcardMain {
+    padding: 28px 18px 62px;
+  }
+
+  .pageHeading,
+  .giftcardHeading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .headingActions {
+    width: 100%;
+  }
+
+  .headingActions button {
+    flex: 1;
+  }
+
+  .giftcardHeading > .refreshButton {
+    width: 100%;
+  }
+
+  .giftcardMetrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .usersPanel,
+  .giftcardPanel {
+    padding: 18px;
+  }
+
+  .usersTable tbody {
+    grid-template-columns: 1fr;
+  }
+
+  .giftcardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .giftcardCard {
+    max-width: 520px;
+  }
+}
+
+@media (max-width: 520px) {
+  .topbarInner {
+    padding: 0 14px;
+  }
+
+  .adminBrand strong {
+    font-size: 16px;
+  }
+
+  .adminBrand small {
+    font-size: 7px;
+  }
+
+  .brandMark,
+  .adminIdentity > div {
+    width: 35px;
+    height: 35px;
+  }
+
+  .adminSidebar > nav {
+    padding: 9px 14px;
+  }
+
+  .adminMetrics,
+  .giftcardMetrics {
+    grid-template-columns: 1fr;
+  }
+
+  .adminMetrics article,
+  .giftcardMetrics article {
+    min-height: auto;
+  }
+
+  .panelHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .recordCount {
+    align-self: flex-start;
+  }
+
+  .usersPanel,
+  .giftcardPanel {
+    padding: 14px;
+  }
+
+  .tableWrap {
+    border: 0;
+    overflow: visible;
+  }
+
+  .usersTable tbody {
+    padding: 0;
+  }
+
+  .usersTable tbody tr {
+    padding: 13px;
+  }
+
+  .usersTable td {
+    grid-template-columns: 92px minmax(0, 1fr);
+  }
+
+  .reverseForm {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .reverseForm label,
+  .reverseForm > button {
+    width: 100%;
+  }
+
+  .reverseForm > button {
+    justify-content: center;
+  }
+
+  .errorBanner {
+    grid-template-columns: 31px 1fr;
+  }
+
+  .errorBanner button {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  .giftcardDetails {
+    grid-template-columns: 1fr;
+  }
+
+  .giftcardDetails .noteRow {
+    grid-column: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .adminShell *,
+  .adminShell *::before,
+  .adminShell *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

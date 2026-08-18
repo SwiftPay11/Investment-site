@@ -31,20 +31,29 @@ export default function LoginPage() {
 
     if (!res.ok) throw new Error(data.message || "Login failed");
 
-    // NEW: If password is correct but verification needed
-    if (data.status === "verify") {
-      localStorage.setItem("pendingEmail", email);
+    const sessionUser = data.user ?? data.data?.user ?? {
+      email,
+      name: data.name ?? email.split("@")[0],
+      ...(data.userId ? { id: data.userId } : {}),
+    };
+    const sessionToken = data.token ?? data.data?.token;
 
-      router.push("/verify-login");  // 👈 send to new verify page
-      return;
+    if (sessionToken) {
+      localStorage.setItem("token", sessionToken);
+    } else {
+      localStorage.removeItem("token");
     }
 
-    // OLD direct login (kept for admin or edge-case)
-    localStorage.setItem("token", data.token);
-    localStorage.setItem("user", JSON.stringify(data.user));
-    localStorage.setItem("userId", data.user.id);
+    localStorage.setItem("user", JSON.stringify(sessionUser));
 
-    router.push("/dashboard");
+    if (sessionUser.id) {
+      localStorage.setItem("userId", sessionUser.id);
+    } else {
+      localStorage.removeItem("userId");
+    }
+
+    localStorage.removeItem("pendingEmail");
+    router.replace("/dashboard");
   } catch (err) {
     alert(err.message);
   } finally {
