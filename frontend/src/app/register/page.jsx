@@ -3,6 +3,20 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import ReactFlagsSelect from "react-flags-select";
+import {
+  FiArrowLeft,
+  FiArrowRight,
+  FiCheck,
+  FiEye,
+  FiEyeOff,
+  FiGlobe,
+  FiLock,
+  FiMail,
+  FiShield,
+  FiTrendingUp,
+  FiUserPlus,
+} from "react-icons/fi";
+import styles from "../auth-pages.module.css";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -11,6 +25,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [language, setLanguage] = useState("en");
+  const [showPassword, setShowPassword] = useState(false);
 
   // --- Translation dictionary ---
   const translations = {
@@ -115,15 +130,21 @@ router.push("/credentials");
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#020817] via-[#060b1e] to-[#0a0f29] text-white flex flex-col">
-      {/* Header */}
-      <header className="flex justify-between items-center px-10 py-5 bg-transparent">
-        <h1 className="text-3xl font-bold text-blue-400">NexTrade</h1>
-        <div className="flex items-center gap-4">
+    <div className={styles.authShell} dir={language === "ar" ? "rtl" : "ltr"}>
+      <div className={styles.authAmbient} aria-hidden="true" />
+
+      <header className={styles.authHeader}>
+        <button type="button" className={styles.authBrand} onClick={() => router.push("/")}>
+          <span><FiTrendingUp aria-hidden="true" /></span>
+          <strong>Nex<span>Trade</span></strong>
+        </button>
+
+        <div className={styles.headerActions}>
           <select
             value={language}
-            onChange={(e) => setLanguage(e.target.value)}
-            className="bg-transparent border border-gray-500 rounded-md p-2 text-sm"
+            onChange={(event) => setLanguage(event.target.value)}
+            className={styles.languageSelect}
+            aria-label="Language"
           >
             <option value="en">🇬🇧 English</option>
             <option value="fr">🇫🇷 Français</option>
@@ -135,82 +156,140 @@ router.push("/credentials");
           </select>
 
           <button
-            className="border border-blue-400 text-blue-300 px-4 py-2 rounded-lg hover:bg-blue-600/20 transition"
+            type="button"
+            className={styles.headerCta}
             onClick={() => router.push("/login")}
           >
             {t.login}
+            <FiArrowRight aria-hidden="true" />
           </button>
         </div>
       </header>
 
-      {/* Main */}
-      <main className="flex flex-1 justify-center items-center px-4">
-        <div className="bg-[#0b122a] rounded-2xl shadow-xl p-10 w-full max-w-md border border-blue-900/40">
-          <h2 className="text-2xl font-semibold text-center mb-8 text-blue-300">
-            {t.createAccount}
-          </h2>
+      <main className={styles.authMain}>
+        <section className={`${styles.authShowcase} ${styles.registerShowcase}`}>
+          <button type="button" className={styles.backLink} onClick={() => router.push("/")}>
+            <FiArrowLeft aria-hidden="true" />
+            Back to home
+          </button>
 
-          <form onSubmit={handleRegister} className="space-y-6">
-            {/* Country Selector */}
-            <div>
-              <ReactFlagsSelect
-                searchable
-                selected={selectedCountry}
-                onSelect={(code) => setSelectedCountry(code)}
-                className="w-full text-black"
-                placeholder={t.selectCountry}
-              />
+          <div className={styles.showcaseCopy}>
+            <span className={styles.authEyebrow}>Start your NexTrade journey</span>
+            <h1>Build your trading profile with confidence.</h1>
+            <p>Create your account now, then complete your profile to access the full NexTrade workspace.</p>
+
+            <ol className={styles.registrationSteps}>
+              <li className={styles.currentStep}>
+                <span>01</span>
+                <div><strong>Create your account</strong><small>Choose your country and secure your login.</small></div>
+                <FiCheck aria-hidden="true" />
+              </li>
+              <li>
+                <span>02</span>
+                <div><strong>Complete your profile</strong><small>Add the details required for your account.</small></div>
+              </li>
+              <li>
+                <span>03</span>
+                <div><strong>Access your workspace</strong><small>Manage your wallet and trading accounts.</small></div>
+              </li>
+            </ol>
+          </div>
+
+          <div className={styles.registrationTrust}>
+            <FiShield aria-hidden="true" />
+            <div><strong>Your information stays protected</strong><span>We use a security-focused account experience.</span></div>
+          </div>
+        </section>
+
+        <section className={styles.formSection}>
+          <div className={styles.formCard}>
+            <div className={styles.formHeading}>
+              <span className={styles.formBadge}><FiUserPlus aria-hidden="true" /> Step 1 of 2</span>
+              <h2>{t.createAccount}</h2>
+              <p>Set up your secure login details to begin.</p>
             </div>
 
-            {/* Email */}
-            <div>
-              <input
-                type="email"
-                placeholder={t.enterEmail}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-3 bg-[#0f1738] border border-blue-800 rounded-md focus:border-blue-500 outline-none"
-              />
-            </div>
+            <form onSubmit={handleRegister} className={styles.authForm}>
+              <label className={styles.fieldGroup}>
+                <span>{t.selectCountry}</span>
+                <div className={styles.countryField}>
+                  <FiGlobe aria-hidden="true" />
+                  <ReactFlagsSelect
+                    searchable
+                    selected={selectedCountry}
+                    onSelect={(code) => setSelectedCountry(code)}
+                    className={styles.countrySelector}
+                    placeholder={t.selectCountry}
+                  />
+                </div>
+              </label>
 
-            {/* Password */}
-            <div>
-              <input
-                type="password"
-                placeholder={t.createPassword}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 bg-[#0f1738] border border-blue-800 rounded-md focus:border-blue-500 outline-none"
-              />
-            </div>
+              <label className={styles.fieldGroup}>
+                <span>Email address</span>
+                <div className={styles.inputWrap}>
+                  <FiMail aria-hidden="true" />
+                  <input
+                    type="email"
+                    autoComplete="email"
+                    placeholder={t.enterEmail}
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                  />
+                </div>
+              </label>
 
-            {/* Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-md font-semibold transition disabled:opacity-50"
-            >
-              {loading ? "..." : t.signUp}
-            </button>
+              <label className={styles.fieldGroup}>
+                <span>Password</span>
+                <div className={styles.inputWrap}>
+                  <FiLock aria-hidden="true" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="new-password"
+                    placeholder={t.createPassword}
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className={styles.passwordToggle}
+                    onClick={() => setShowPassword((current) => !current)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <FiEyeOff aria-hidden="true" /> : <FiEye aria-hidden="true" />}
+                  </button>
+                </div>
+                <small className={styles.fieldHint}>Use a strong password you don’t use elsewhere.</small>
+              </label>
 
-            {/* Login Link */}
-            <p className="text-center text-sm text-gray-400 mt-4">
-              {t.already}{" "}
-              <button
-                type="button"
-                onClick={() => router.push("/login")}
-                className="text-blue-400 hover:underline font-semibold"
-              >
-                {t.login}
+              <button type="submit" disabled={loading} className={styles.submitButton}>
+                {loading ? (
+                  <><span className={styles.buttonSpinner} /> Creating account…</>
+                ) : (
+                  <>{t.signUp} <FiArrowRight aria-hidden="true" /></>
+                )}
               </button>
-            </p>
-          </form>
-        </div>
+
+              <p className={styles.termsText}>
+                By continuing, you confirm that the information provided is accurate.
+              </p>
+
+              <p className={styles.formSwitch}>
+                {t.already}{" "}
+                <button type="button" onClick={() => router.push("/login")}>{t.login}</button>
+              </p>
+            </form>
+
+            <div className={styles.formSecurity}>
+              <FiShield aria-hidden="true" />
+              <span>Your account details are transmitted securely.</span>
+            </div>
+          </div>
+        </section>
       </main>
 
-      {/* Footer */}
-      <footer className="text-center text-xs text-gray-500 py-4 border-t border-blue-900/40">
-        © {new Date().getFullYear()} NexTrade Markets. All rights reserved.
+      <footer className={styles.authFooter}>
+        <span>© {new Date().getFullYear()} NexTrade Markets</span>
+        <span>Secure account registration</span>
       </footer>
     </div>
   );

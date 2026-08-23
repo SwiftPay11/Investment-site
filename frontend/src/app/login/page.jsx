@@ -2,12 +2,26 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  FiArrowLeft,
+  FiArrowRight,
+  FiCheck,
+  FiEye,
+  FiEyeOff,
+  FiLock,
+  FiMail,
+  FiShield,
+  FiTrendingUp,
+  FiZap,
+} from "react-icons/fi";
+import styles from "../auth-pages.module.css";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   
 
   const handleLogin = async (e) => {
@@ -27,9 +41,19 @@ export default function LoginPage() {
       body: JSON.stringify({ email, password }),
     });
 
-    const data = await res.json();
+    const responseText = await res.text();
+    let data = null;
 
-    if (!res.ok) throw new Error(data.message || "Login failed");
+    if (responseText) {
+      try {
+        data = JSON.parse(responseText);
+      } catch {
+        throw new Error("The login service returned an invalid response");
+      }
+    }
+
+    if (!res.ok) throw new Error(data?.message || "Login failed");
+    if (!data) throw new Error("The login service returned an empty response");
 
     const sessionUser = data.user ?? data.data?.user ?? {
       email,
@@ -62,87 +86,145 @@ export default function LoginPage() {
 };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#020817] via-[#060b1e] to-[#0a0f29] text-white flex flex-col">
-      {/* Header */}
-      <header className="flex justify-between items-center px-10 py-5 bg-transparent">
-        <h1 className="text-3xl font-bold text-blue-400">NexTrade</h1>
-        <div className="flex items-center gap-4">
-          <select className="bg-transparent border border-gray-500 rounded-md p-2 text-sm">
+    <div className={styles.authShell}>
+      <div className={styles.authAmbient} aria-hidden="true" />
+
+      <header className={styles.authHeader}>
+        <button type="button" className={styles.authBrand} onClick={() => router.push("/")}>
+          <span><FiTrendingUp aria-hidden="true" /></span>
+          <strong>Nex<span>Trade</span></strong>
+        </button>
+
+        <div className={styles.headerActions}>
+          <select className={styles.languageSelect} aria-label="Language">
             <option>English</option>
             <option>Français</option>
             <option>Deutsch</option>
           </select>
           <button
+            type="button"
             onClick={() => router.push("/register")}
-            className="border border-blue-400 text-blue-300 px-4 py-2 rounded-lg hover:bg-blue-600/20 transition"
+            className={styles.headerCta}
           >
-            Register a Profile
+            Create account
+            <FiArrowRight aria-hidden="true" />
           </button>
         </div>
       </header>
 
-      {/* Main */}
-      <main className="flex flex-1 justify-center items-center px-4">
-        <div className="bg-[#0b122a] rounded-2xl shadow-xl p-10 w-full max-w-md border border-blue-900/40">
-          <h2 className="text-2xl font-semibold text-center mb-8 text-blue-300">
-            Log in to Your Profile
-          </h2>
+      <main className={styles.authMain}>
+        <section className={styles.authShowcase}>
+          <button type="button" className={styles.backLink} onClick={() => router.push("/")}>
+            <FiArrowLeft aria-hidden="true" />
+            Back to home
+          </button>
 
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-3 bg-[#0f1738] border border-blue-800 rounded-md focus:border-blue-500 outline-none"
-              />
+          <div className={styles.showcaseCopy}>
+            <span className={styles.authEyebrow}>Your trading workspace</span>
+            <h1>Welcome back to a clearer way to trade.</h1>
+            <p>Access your wallet, trading accounts, and account activity from one secure dashboard.</p>
+
+            <ul className={styles.benefitList}>
+              <li><span><FiZap aria-hidden="true" /></span><div><strong>Fast account access</strong><small>Move directly into your complete trading workspace.</small></div></li>
+              <li><span><FiShield aria-hidden="true" /></span><div><strong>Protected session</strong><small>Your access is handled through a security-focused experience.</small></div></li>
+              <li><span><FiCheck aria-hidden="true" /></span><div><strong>Everything in one place</strong><small>Monitor balances, accounts, and transactions clearly.</small></div></li>
+            </ul>
+          </div>
+
+          <div className={styles.showcaseCard}>
+            <div className={styles.showcaseCardTop}>
+              <span>Account overview</span>
+              <span className={styles.securePill}><i /> Secure</span>
+            </div>
+            <div className={styles.showcaseBalance}>
+              <span>Available balance</span>
+              <strong><small>$</small>24,860.40</strong>
+            </div>
+            <div className={styles.showcaseStats}>
+              <div><span>Trading accounts</span><strong>3 active</strong></div>
+              <div><span>Account access</span><strong>Protected</strong></div>
+            </div>
+          </div>
+        </section>
+
+        <section className={styles.formSection}>
+          <div className={styles.formCard}>
+            <div className={styles.formHeading}>
+              <span className={styles.formBadge}><FiLock aria-hidden="true" /> Secure login</span>
+              <h2>Log in to your profile</h2>
+              <p>Enter your account details to continue to NexTrade.</p>
             </div>
 
-            <div>
-              <input
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-3 bg-[#0f1738] border border-blue-800 rounded-md focus:border-blue-500 outline-none"
-              />
-            </div>
-
-            <div className="flex justify-between items-center text-sm text-gray-400">
-              <label className="flex items-center gap-2">
-                <input type="checkbox" className="accent-blue-500" />
-                Remember me
+            <form onSubmit={handleLogin} className={styles.authForm}>
+              <label className={styles.fieldGroup}>
+                <span>Email address</span>
+                <div className={styles.inputWrap}>
+                  <FiMail aria-hidden="true" />
+                  <input
+                    type="email"
+                    autoComplete="email"
+                    placeholder="name@example.com"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                  />
+                </div>
               </label>
-              <a href="/reset" className="text-blue-400 hover:underline">
-                Forgot password?
-              </a>
+
+              <label className={styles.fieldGroup}>
+                <span>Password</span>
+                <div className={styles.inputWrap}>
+                  <FiLock aria-hidden="true" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                  />
+                  <button
+                    type="button"
+                    className={styles.passwordToggle}
+                    onClick={() => setShowPassword((current) => !current)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? <FiEyeOff aria-hidden="true" /> : <FiEye aria-hidden="true" />}
+                  </button>
+                </div>
+              </label>
+
+              <div className={styles.formOptions}>
+                <label className={styles.rememberOption}>
+                  <input type="checkbox" />
+                  <span>Remember me</span>
+                </label>
+                <a href="/reset">Forgot password?</a>
+              </div>
+
+              <button type="submit" disabled={loading} className={styles.submitButton}>
+                {loading ? (
+                  <><span className={styles.buttonSpinner} /> Signing in…</>
+                ) : (
+                  <>Log in securely <FiArrowRight aria-hidden="true" /></>
+                )}
+              </button>
+
+              <p className={styles.formSwitch}>
+                New to NexTrade?{" "}
+                <button type="button" onClick={() => router.push("/register")}>Create an account</button>
+              </p>
+            </form>
+
+            <div className={styles.formSecurity}>
+              <FiShield aria-hidden="true" />
+              <span>Your login information is transmitted securely.</span>
             </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-md font-semibold transition disabled:opacity-50"
-            >
-              {loading ? "Logging in..." : "Log In"}
-            </button>
-
-            <p className="text-center text-sm text-gray-400 mt-4">
-              Not our client yet?{" "}
-              <a
-                href="/register"
-                className="text-blue-400 hover:underline font-semibold"
-              >
-                Register a Profile
-              </a>
-            </p>
-          </form>
-        </div>
+          </div>
+        </section>
       </main>
 
-      {/* Footer */}
-      <footer className="text-center text-xs text-gray-500 py-4 border-t border-blue-900/40">
-        © {new Date().getFullYear()} NexTrade Markets. All rights reserved.
+      <footer className={styles.authFooter}>
+        <span>© {new Date().getFullYear()} NexTrade Markets</span>
+        <span>Secure trading access</span>
       </footer>
     </div>
   );

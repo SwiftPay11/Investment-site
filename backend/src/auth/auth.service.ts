@@ -58,14 +58,33 @@ async register(dto: any) {
 
   // LOGIN
   async login(email: string, password: string) {
-  const user = await this.usersService.findByEmail(email);
-  if (!user) throw new UnauthorizedException("Invalid credentials");
+    const user = await this.usersService.findByEmail(email);
+    if (!user) throw new UnauthorizedException("Invalid credentials");
 
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) throw new UnauthorizedException("Invalid credentials")
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) throw new UnauthorizedException("Invalid credentials");
 
-  await this.usersService.updateUser(user);
-}
+    const token = this.jwtService.sign({
+      id: user.id,
+      email: user.email,
+    });
+
+    const {
+      password: _password,
+      resetCode: _resetCode,
+      resetCodeExpires: _resetCodeExpires,
+      loginCode: _loginCode,
+      loginCodeExpires: _loginCodeExpires,
+      ...sessionUser
+    } = user;
+
+    return {
+      status: "success",
+      message: "Login successful.",
+      token,
+      user: sessionUser,
+    };
+  }
 
 
   // -----------------------------------
